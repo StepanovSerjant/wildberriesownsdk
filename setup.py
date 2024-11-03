@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
 
 
 setup(
-    name="wildberriesbapi",
+    name="wildberriesapi",
     version=__version__,
     description="Wildberries API SDK. (not official)",
     long_description=open(join(dirname(__file__), "README.txt")).read(),
