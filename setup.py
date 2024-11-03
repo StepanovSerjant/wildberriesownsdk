@@ -10,7 +10,7 @@ setup(
     name="wildberriesapi",
     version=__version__,
     description="Wildberries API SDK. (not official)",
-    long_description=open(join(dirname(__file__), "README.txt")).read(),
+    long_description=open(join(dirname(__file__), "README.md")).read(),
     url="https://github.com/StepanovSerjant/wildberriesownsdk",
     author="Aleksey Stepanov",
     author_email="stpnvlks@gmail.com",
