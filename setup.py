@@ -1,5 +1,5 @@
 from os.path import join, dirname
-from setuptools import setup
+from setuptools import setup, find_packages
 
 __version__ = "0.0.1"
 with open("requirements.txt") as f:
@@ -14,7 +14,7 @@ setup(
     url="https://github.com/StepanovSerjant/wildberriesownsdk",
     author="Aleksey Stepanov",
     author_email="stpnvlks@gmail.com",
-    py_modules=["wbapi"],
+    packages=find_packages(),
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3",
