@@ -3,9 +3,10 @@ from typing import List, Iterable
 
 from loguru import logger
 
+from common.utils import retry
 from api.enums import SupplyStatus
 from api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
-from common.utils import retry
+from api.introspect import IntrospectAPIKeyAPIAction
 
 
 class WBAPIConnector:
@@ -31,6 +32,10 @@ class WBAPIConnector:
     def create_supply(self, supply_name: str) -> dict:
         create_supply_api_action = CreateSupplyAPIAction(name=supply_name)
         return create_supply_api_action.do()
+
+    def introspect():
+        wb_api_action = IntrospectAPIKeyAPIAction()
+        return wb_api_action.do()
 
     def put_orders_into_supply(
         self, supply_id: str, orders: iter
@@ -67,3 +72,4 @@ class WBAPIConnector:
             tasks.append(task)
 
         await asyncio.gather(*tasks)
+
