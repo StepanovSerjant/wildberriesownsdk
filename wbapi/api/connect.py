@@ -34,8 +34,8 @@ class WBAPIConnector:
         return create_supply_api_action.do()
 
     def introspect():
-        wb_api_action = IntrospectAPIKeyAPIAction()
-        return wb_api_action.do()
+        instrospect_api_action = IntrospectAPIKeyAPIAction()
+        return instrospect_api_action.do()
 
     def put_orders_into_supply(
         self, supply_id: str, orders: iter
