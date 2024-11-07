@@ -1,4 +1,4 @@
-from .base import WBAPIAction
+from base import WBAPIAction
 
 
 class NewOrdersAPIAction(WBAPIAction):

@@ -2,9 +2,9 @@ import datetime
 from dataclasses import dataclass
 from typing import List
 
-from src.common import config
-from .base import WBAPIAction
-from src.common.exceptions import APIKeyIntrospectionException
+from common import config
+from base import WBAPIAction
+from common.exceptions import APIKeyIntrospectionException
 
 
 @dataclass(frozen=True)

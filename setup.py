@@ -14,7 +14,7 @@ setup(
     url="https://github.com/StepanovSerjant/wildberriesownsdk",
     author="Aleksey Stepanov",
     author_email="stpnvlks@gmail.com",
-    packages=find_packages(),
+    packages=find_packages(include=["wbapi", "wbapi.api", "wbapi.common"]),
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3",
