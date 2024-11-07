@@ -6,7 +6,6 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from wildberriesownsdk.api.connect import WBAPIConnector
 from wildberriesownsdk.api.services import RequestService
 from wildberriesownsdk.common import config
 from wildberriesownsdk.common.exceptions import GettingDataFromAPIException
@@ -23,7 +22,7 @@ class WBAPIAction(RequestService):
 
     data_field = ""
 
-    def __init__(self, api_connector: WBAPIConnector, page: int = 1):
+    def __init__(self, api_connector, page: int = 1):
         self.api_key = api_connector.api_key
         self.api_scopes = api_connector.scopes
         self.page = page  # 0 value - disable pagination
