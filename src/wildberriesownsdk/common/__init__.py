@@ -1,7 +1,4 @@
-all = [
-    "APIKeyIntrospectionException",
-    "GettingDataFromAPIException"
-]
+all = ["APIKeyIntrospectionException", "GettingDataFromAPIException"]
 
-from .exceptions import GettingDataFromAPIException
-from .exceptions import APIKeyIntrospectionException
+from .exceptions import (APIKeyIntrospectionException,
+                         GettingDataFromAPIException)

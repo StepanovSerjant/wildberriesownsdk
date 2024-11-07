@@ -27,7 +27,9 @@ class WBIntrospectAPIKeySummary:
             validation_error_text = "Ваш API токен предназначен только для песочницы."
         elif self.expired:
             validation_error_text = "Действие вашего API токена прекращено, необходимо создать новый в личном кабинете WB."
-        elif (expiration_minutes_left := self.expiration_minutes_left) <= max_minutes_left_to_expire:
+        elif (
+            expiration_minutes_left := self.expiration_minutes_left
+        ) <= max_minutes_left_to_expire:
             validation_error_text = f"Действие вашего API токена прекратится через {expiration_minutes_left} минут, необходимо создать новый в личном кабинете WB."
         else:
             validation_error_text = None
@@ -36,14 +38,11 @@ class WBIntrospectAPIKeySummary:
             validation_error_text += "\nБолее подробная информация об API токене https://openapi.wildberries.ru/general/authorization/ru/"
             raise APIKeyIntrospectionException(validation_error_text)
 
-
     @property
     def expired_at_dtm(self) -> datetime.datetime:
-        return (
-            datetime.datetime
-            .strptime(self.expires_at, config.API_DATABASE_DATETIME_FORMAT)
-            .replace(tzinfo=config.API_DATABASE_TZ)
-        )
+        return datetime.datetime.strptime(
+            self.expires_at, config.API_DATABASE_DATETIME_FORMAT
+        ).replace(tzinfo=config.API_DATABASE_TZ)
 
     @property
     def expiration_summary(self) -> str:
@@ -52,7 +51,12 @@ class WBIntrospectAPIKeySummary:
 
     @property
     def expiration_minutes_left(self) -> int:
-       return int((self.expired_at_dtm - datetime.datetime.now(tz=config.API_DATABASE_TZ)).total_seconds() // 60)
+        return int(
+            (
+                self.expired_at_dtm - datetime.datetime.now(tz=config.API_DATABASE_TZ)
+            ).total_seconds()
+            // 60
+        )
 
 
 class IntrospectAPIKeyAPIAction(WBAPIAction):

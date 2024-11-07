@@ -1,18 +1,28 @@
 import asyncio
-from typing import List, Iterable
+from typing import Iterable, List
 
 from loguru import logger
 
+from wildberriesownsdk.api.enums import SupplyStatus
+from wildberriesownsdk.api.introspect import (IntrospectAPIKeyAPIAction,
+                                              WBIntrospectAPIKeySummary)
+from wildberriesownsdk.api.marketplace import (CreateSupplyAPIAction,
+                                               NewOrdersAPIAction,
+                                               OrdersStatusesAPIAction,
+                                               OrdersToSupplyAPIAction)
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 from wildberriesownsdk.common.utils import retry
-from wildberriesownsdk.api.enums import SupplyStatus
-from wildberriesownsdk.api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
-from wildberriesownsdk.api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
 
 
 class WBAPIConnector:
 
-    def __init__(self, api_key: str, scopes: List[str], introspect: bool = True, debug: bool = True) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        scopes: List[str],
+        introspect: bool = True,
+        debug: bool = True,
+    ) -> None:
         self.api_key = api_key
         self.scopes = scopes
         self.introspect = introspect
@@ -24,11 +34,15 @@ class WBAPIConnector:
 
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
         orders_statuses_body = {"orders": orders_ids}
-        orders_statuses_api_action = OrdersStatusesAPIAction(api_connector=self, body=orders_statuses_body)
+        orders_statuses_api_action = OrdersStatusesAPIAction(
+            api_connector=self, body=orders_statuses_body
+        )
         return orders_statuses_api_action.do()
 
     def create_supply(self, supply_name: str) -> dict:
-        create_supply_api_action = CreateSupplyAPIAction(api_connector=self, name=supply_name)
+        create_supply_api_action = CreateSupplyAPIAction(
+            api_connector=self, name=supply_name
+        )
         return create_supply_api_action.do()
 
     def perform_introspect(self) -> WBIntrospectAPIKeySummary:
@@ -37,21 +51,28 @@ class WBAPIConnector:
 
         token_summary = response.get("summary", {})
         if not token_summary:
-            raise APIKeyIntrospectionException("Не удалось получить информацию о токене.")
+            raise APIKeyIntrospectionException(
+                "Не удалось получить информацию о токене."
+            )
 
-        summary_fields_to_exclude = ("token_id", "x_supplier_id",)
+        summary_fields_to_exclude = (
+            "token_id",
+            "x_supplier_id",
+        )
         for field in summary_fields_to_exclude:
             token_summary.pop(field, None)
 
         introspect_summary = WBIntrospectAPIKeySummary(**token_summary)
-        if not all([scope in introspect_summary.scopes_decoded for scope in self.scopes]):
-            raise APIKeyIntrospectionException("Ваш API токен не обладает определенными правами для действий скрипта.")
+        if not all(
+            [scope in introspect_summary.scopes_decoded for scope in self.scopes]
+        ):
+            raise APIKeyIntrospectionException(
+                "Ваш API токен не обладает определенными правами для действий скрипта."
+            )
 
         return introspect_summary
 
-    def put_orders_into_supply(
-        self, supply_id: str, orders: iter
-    ) -> None:
+    def put_orders_into_supply(self, supply_id: str, orders: iter) -> None:
         asyncio.run(self.async_put_orders_to_supply(supply_id, orders))
 
         orders_ids = [order["id"] for order in orders]

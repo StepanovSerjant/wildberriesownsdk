@@ -2,10 +2,10 @@ import datetime
 import functools
 import time
 from json import JSONDecodeError
-from typing import Optional, Any
+from typing import Any, Optional
 
-import pytz
 import httpx
+import pytz
 
 from wildberriesownsdk.common.config import logger
 
@@ -27,9 +27,7 @@ def log_response(response: httpx.Response) -> None:
     except JSONDecodeError:
         resp_json = {}
 
-    logger.info(
-        f"Status code {response.status_code}. Response json: {resp_json}"
-    )
+    logger.info(f"Status code {response.status_code}. Response json: {resp_json}")
 
 
 def retry(target_value: Any, tries: int = 1, delay: int = 1):
