@@ -5,9 +5,9 @@ from loguru import logger
 
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 from wildberriesownsdk.common.utils import retry
-from .enums import SupplyStatus
-from .marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
-from .introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
+from wildberriesownsdk.api.enums import SupplyStatus
+from wildberriesownsdk.api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
+from wildberriesownsdk.api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
 
 
 class WBAPIConnector:

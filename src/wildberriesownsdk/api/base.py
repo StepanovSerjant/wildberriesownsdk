@@ -6,8 +6,8 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from .connect import WBAPIConnector
-from .services import RequestService
+from wildberriesownsdk.api.connect import WBAPIConnector
+from wildberriesownsdk.api.services import RequestService
 from wildberriesownsdk.common import config
 from wildberriesownsdk.common.exceptions import GettingDataFromAPIException
 from wildberriesownsdk.common.utils import log_response
