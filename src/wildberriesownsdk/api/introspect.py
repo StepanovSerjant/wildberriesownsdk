@@ -19,13 +19,15 @@ class WBIntrospectAPIKeySummary:
         self.validate()
 
     def validate(self):
+        max_minutes_left_to_expire = 10
+
         if self.deleted:
             validation_error_text = "Ваш API токен удалён."
         elif self.is_sandbox:
             validation_error_text = "Ваш API токен предназначен только для песочницы."
         elif self.expired:
             validation_error_text = "Действие вашего API токена прекращено, необходимо создать новый в личном кабинете WB."
-        elif expiration_minutes_left := self.expiration_minutes_left:
+        elif expiration_minutes_left := self.expiration_minutes_left <= max_minutes_left_to_expire:
             validation_error_text = f"Действие вашего API токена прекратится через {expiration_minutes_left} минут, необходимо создать новый в личном кабинете WB."
         else:
             validation_error_text = None
