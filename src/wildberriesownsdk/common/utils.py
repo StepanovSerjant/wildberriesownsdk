@@ -7,7 +7,7 @@ from typing import Optional, Any
 import pytz
 import httpx
 
-from wbapi.common.config import logger
+from wildberriesownsdk.config import logger
 
 
 def get_tz(tz_name: str):

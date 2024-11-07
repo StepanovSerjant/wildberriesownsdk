@@ -6,11 +6,11 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from wbapi.api.connect import WBAPIConnector
-from wbapi.api.services import RequestService
-from wbapi.common import config
-from wbapi.common.exceptions import GettingDataFromAPIException
-from wbapi.common.utils import log_response
+from wildberriesownsdk.api.connect import WBAPIConnector
+from wildberriesownsdk.api.services import RequestService
+from wildberriesownsdk.common import config
+from wildberriesownsdk.common.exceptions import GettingDataFromAPIException
+from wildberriesownsdk.common.utils import log_response
 
 
 class WBAPIAction(RequestService):

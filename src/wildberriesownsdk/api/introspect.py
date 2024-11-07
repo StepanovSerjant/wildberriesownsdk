@@ -2,9 +2,9 @@ import datetime
 from dataclasses import dataclass
 from typing import List
 
-from wbapi.api.base import WBAPIAction
-from wbapi.common import config
-from wbapi.common.exceptions import APIKeyIntrospectionException
+from wildberriesownsdk.api.base import WBAPIAction
+from wildberriesownsdk.common import config
+from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 
 
 @dataclass(frozen=True)

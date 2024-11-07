@@ -3,11 +3,11 @@ from typing import List, Iterable
 
 from loguru import logger
 
-from wbapi.common.exceptions import APIKeyIntrospectionException
-from wbapi.common.utils import retry
-from wbapi.api.enums import SupplyStatus
-from wbapi.api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
-from wbapi.api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
+from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
+from wildberriesownsdk.common.utils import retry
+from wildberriesownsdk.api.enums import SupplyStatus
+from wildberriesownsdk.api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
+from wildberriesownsdk.api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
 
 
 class WBAPIConnector:
