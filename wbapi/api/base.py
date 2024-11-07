@@ -1,15 +1,16 @@
 import abc
-from typing import Any, Coroutine, Union, List
+from typing import Any, Coroutine, Union
 from urllib import parse
 
 import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
+from api.connect import WBAPIConnector
 from services import RequestService
 from common import config
 from common.exceptions import GettingDataFromAPIException
-from common.utils import log_response, get_tz
+from common.utils import log_response
 
 
 class WBAPIAction(RequestService):
@@ -22,10 +23,9 @@ class WBAPIAction(RequestService):
 
     data_field = ""
 
-    def __init__(self, api_key: str, api_scopes: List[str], tz_name: str, page: int = 1):
-        self.api_key = api_key
-        self.api_scopes = api_scopes
-        self.tz = get_tz(tz_name)
+    def __init__(self, api_connector: WBAPIConnector, page: int = 1):
+        self.api_key = api_connector.api_key
+        self.api_scopes = api_connector.scopes
         self.page = page  # 0 value - disable pagination
 
     def __str__(self) -> str:

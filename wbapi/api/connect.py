@@ -3,9 +3,11 @@ from typing import List, Iterable
 
 from loguru import logger
 
+from common.exceptions import APIKeyIntrospectionException
+from common.utils import retry
 from api.enums import SupplyStatus
 from api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
-from common.utils import retry
+from api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
 
 
 class WBAPIConnector:
@@ -16,21 +18,36 @@ class WBAPIConnector:
         self.introspect = introspect
         self.debug = debug
 
-    def __validate(self) -> None:
-        return None
-
     def get_new_orders(self) -> list:
-        new_orders_api_action = NewOrdersAPIAction(self.api_key, self.scopes)
+        new_orders_api_action = NewOrdersAPIAction(api_connector=self)
         return new_orders_api_action.do()
 
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
         orders_statuses_body = {"orders": orders_ids}
-        orders_statuses_api_action = OrdersStatusesAPIAction(self.api_key, self.scopes, body=orders_statuses_body)
+        orders_statuses_api_action = OrdersStatusesAPIAction(api_connector=self, body=orders_statuses_body)
         return orders_statuses_api_action.do()
 
     def create_supply(self, supply_name: str) -> dict:
-        create_supply_api_action = CreateSupplyAPIAction(name=supply_name)
+        create_supply_api_action = CreateSupplyAPIAction(api_connector=self, name=supply_name)
         return create_supply_api_action.do()
+
+    def introspect(self) -> WBIntrospectAPIKeySummary:
+        introspect_api_action = IntrospectAPIKeyAPIAction(api_connector=self)
+        response = introspect_api_action.do()
+
+        token_summary = response.get("summary", {})
+        if not token_summary:
+            raise APIKeyIntrospectionException("Не удалось получить информацию о токене.")
+
+        summary_fields_to_exclude = ("token_id", "x_supplier_id",)
+        for field in summary_fields_to_exclude:
+            token_summary.pop(field, None)
+
+        introspect_summary = WBIntrospectAPIKeySummary(**token_summary)
+        if not all([scope in introspect_summary.scopes_decoded for scope in self.scopes]):
+            raise APIKeyIntrospectionException("Ваш API токен не обладает определенными правами для действий скрипта.")
+
+        return introspect_summary
 
     def put_orders_into_supply(
         self, supply_id: str, orders: iter
@@ -61,7 +78,7 @@ class WBAPIConnector:
         for order in orders:
             order_id = order["id"]
             async_wb_api_action = OrdersToSupplyAPIAction(
-                self.api_key, self.scopes, supply_id=supply_id, order_id=order_id
+                api_connector=self, supply_id=supply_id, order_id=order_id
             )
             task = asyncio.create_task(async_wb_api_action.async_do())
             tasks.append(task)
