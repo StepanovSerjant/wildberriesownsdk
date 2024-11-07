@@ -31,7 +31,7 @@ class WBAPIConnector:
         create_supply_api_action = CreateSupplyAPIAction(api_connector=self, name=supply_name)
         return create_supply_api_action.do()
 
-    def introspect(self) -> WBIntrospectAPIKeySummary:
+    def perform_introspect(self) -> WBIntrospectAPIKeySummary:
         introspect_api_action = IntrospectAPIKeyAPIAction(api_connector=self)
         response = introspect_api_action.do()
 
