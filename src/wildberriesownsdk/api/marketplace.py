@@ -1,4 +1,4 @@
-from wildberriesownsdk.api.base import WBAPIAction
+from api.base import WBAPIAction
 
 
 class NewOrdersAPIAction(WBAPIAction):
