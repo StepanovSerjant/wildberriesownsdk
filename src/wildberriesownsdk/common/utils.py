@@ -50,4 +50,3 @@ def retry(target_value: Any, tries: int = 1, delay: int = 1):
         return wrapper
 
     return func_exc
-
