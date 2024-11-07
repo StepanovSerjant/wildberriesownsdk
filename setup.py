@@ -14,7 +14,7 @@ setup(
     url="https://github.com/StepanovSerjant/wildberriesownsdk",
     author="Aleksey Stepanov",
     author_email="stpnvlks@gmail.com",
-    packages=find_packages("src"),
+    packages=find_packages(),
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3",

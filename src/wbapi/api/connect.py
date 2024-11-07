@@ -3,11 +3,11 @@ from typing import List, Iterable
 
 from loguru import logger
 
-from common.exceptions import APIKeyIntrospectionException
-from common.utils import retry
-from api.enums import SupplyStatus
-from api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
-from api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
+from src.common.exceptions import APIKeyIntrospectionException
+from src.common.utils import retry
+from src.api.enums import SupplyStatus
+from src.api.marketplace import NewOrdersAPIAction, OrdersStatusesAPIAction, CreateSupplyAPIAction, OrdersToSupplyAPIAction
+from src.api.introspect import IntrospectAPIKeyAPIAction, WBIntrospectAPIKeySummary
 
 
 class WBAPIConnector:
