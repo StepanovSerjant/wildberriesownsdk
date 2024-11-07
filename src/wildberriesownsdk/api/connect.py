@@ -4,12 +4,16 @@ from typing import Iterable, List
 from loguru import logger
 
 from wildberriesownsdk.api.enums import SupplyStatus
-from wildberriesownsdk.api.introspect import (IntrospectAPIKeyAPIAction,
-                                              WBIntrospectAPIKeySummary)
-from wildberriesownsdk.api.marketplace import (CreateSupplyAPIAction,
-                                               NewOrdersAPIAction,
-                                               OrdersStatusesAPIAction,
-                                               OrdersToSupplyAPIAction)
+from wildberriesownsdk.api.introspect import (
+    IntrospectAPIKeyAPIAction,
+    WBIntrospectAPIKeySummary,
+)
+from wildberriesownsdk.api.marketplace import (
+    CreateSupplyAPIAction,
+    NewOrdersAPIAction,
+    OrdersStatusesAPIAction,
+    OrdersToSupplyAPIAction,
+)
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 from wildberriesownsdk.common.utils import retry
 
