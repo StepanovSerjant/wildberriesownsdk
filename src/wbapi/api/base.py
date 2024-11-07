@@ -6,11 +6,11 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from api.connect import WBAPIConnector
-from services import RequestService
-from common import config
-from common.exceptions import GettingDataFromAPIException
-from common.utils import log_response
+from wbapi.api.connect import WBAPIConnector
+from wbapi.api.services import RequestService
+from wbapi.common import config
+from wbapi.common.exceptions import GettingDataFromAPIException
+from wbapi.common.utils import log_response
 
 
 class WBAPIAction(RequestService):
