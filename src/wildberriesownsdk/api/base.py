@@ -133,7 +133,7 @@ class WBAPIAction(RequestService):
             "headers": self.get_auth_headers(),
         }
         if self.method == "POST" and (files_data := self.get_files()):
-            request_kwargs["data"] = files_data
+            request_kwargs["files"] = files_data
         else:
             request_kwargs["json"] = self.get_body()
 
