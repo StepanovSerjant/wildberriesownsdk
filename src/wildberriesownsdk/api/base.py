@@ -85,22 +85,14 @@ class WBAPIAction(RequestService):
         return merged_response_data
 
     def perform_request(self) -> httpx.Response:
-        response = self.request(
-            method=self.method,
-            url=self.get_url(),
-            json=self.get_body(),
-            headers=self.get_auth_headers(),
-        )
+        request_kwargs = self.get_request_kwargs()
+        response = self.request(**request_kwargs)
         log_response(response)
         return response
 
     async def async_perform_request(self) -> Coroutine:
-        response = await self.async_request(
-            method=self.method,
-            url=self.get_url(),
-            json=self.get_body(),
-            headers=self.get_auth_headers(),
-        )
+        request_kwargs = self.get_request_kwargs()
+        response = await self.async_request(**request_kwargs)
         log_response(response)
         return response
 
@@ -119,6 +111,9 @@ class WBAPIAction(RequestService):
     def get_body(self) -> dict:
         return {}
 
+    def get_files(self) -> dict:
+        return {}
+
     def get_url(self) -> str:
         url = f"{config.BASE_API_URL}/{config.API_VERSION}/{self.path}"
         query_params = self.get_query_params()
@@ -130,6 +125,19 @@ class WBAPIAction(RequestService):
 
     def get_query_params(self) -> dict:
         return self.pagination_query_params
+
+    def get_request_kwargs(self) -> dict:
+        request_kwargs = {
+            "method": self.method,
+            "url": self.get_url(),
+            "headers": self.get_auth_headers(),
+        }
+        if self.method == "POST" and (files_data := self.get_files()):
+            request_kwargs["files"] = files_data
+        else:
+            request_kwargs["json"] = self.get_body()
+
+        return request_kwargs
 
     def get_response_data(self, response: Union[httpx.Response, Coroutine]):
         response_status_code = response.status_code

@@ -1,8 +1,10 @@
 import asyncio
+from pathlib import Path
 from typing import Iterable, List
 
 from loguru import logger
 
+from wildberriesownsdk.api.content import ImageToArticleUploadAction
 from wildberriesownsdk.api.enums import SupplyStatus
 from wildberriesownsdk.api.introspect import (
     IntrospectAPIKeyAPIAction,
@@ -87,6 +89,11 @@ class WBAPIConnector:
             logger.error(
                 f"Не удалось подтвердить статус заказов внутри поставки - {supply_id}"
             )
+
+    def create_upload_image_to_article_action(self, article: str, file: Path, image_number: int):
+        return ImageToArticleUploadAction(
+            api_connector=self, article=article, image_number=image_number, file=file
+        )
 
     @retry(target_value=True, tries=3)
     def is_all_orders_on_confirm(self, orders_ids: iter) -> bool:
