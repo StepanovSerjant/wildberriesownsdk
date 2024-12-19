@@ -18,7 +18,8 @@ class ImageToArticleUploadAction(WBAPIAction):
 
         self.article = article
         self.image_number = image_number
-        self.files_data = self.read_file(file)
+        self.file = file
+        self.files_data = self.read_file(self.file)
 
     def get_auth_headers(self) -> dict:
         request_headers = {
