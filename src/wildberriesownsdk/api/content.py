@@ -18,13 +18,7 @@ class ImageToArticleUploadAction(WBAPIAction):
 
         self.article = article
         self.image_number = image_number
-        self.files_data = self._read_file(file)
-
-    def _read_file(self, file: Path):
-        with open(file, "rb") as f:
-            files_data = {"uploadfile": (file, f)}
-
-        return files_data
+        self.files_data = self.read_file(file)
 
     def get_auth_headers(self) -> dict:
         request_headers = {
@@ -41,3 +35,8 @@ class ImageToArticleUploadAction(WBAPIAction):
 
     def get_url(self) -> str:
         return f"{config.BASE_CONTENT_API_URL}/{config.CONTENT_API_VERSION}/{self.path}"
+
+    @staticmethod
+    def read_file(file: Path) -> dict:
+        files_data = {"uploadfile": open(file, "rb")}
+        return files_data

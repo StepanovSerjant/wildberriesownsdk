@@ -19,6 +19,7 @@ class WBAPIAction(RequestService):
     path = ""
     method = ""
     paginated = False
+    timeout = httpx.Timeout(15.0, connect=30)
 
     data_field = ""
 
@@ -33,6 +34,15 @@ class WBAPIAction(RequestService):
             if self.help_text
             else f"WB Сервис {self.name}"
         )
+
+    @property
+    def pagination_query_params(self) -> dict:
+        if self.paginated:
+            return {
+                "limit": 100,
+                "next": self.page,
+            }
+        return {}
 
     @abc.abstractmethod
     def do(self) -> Any:
@@ -96,15 +106,6 @@ class WBAPIAction(RequestService):
         log_response(response)
         return response
 
-    @property
-    def pagination_query_params(self) -> dict:
-        if self.paginated:
-            return {
-                "limit": 100,
-                "next": self.page,
-            }
-        return {}
-
     def get_auth_headers(self) -> dict:
         return {"Authorization": self.api_key, "accept": "application/json"}
 
@@ -137,11 +138,14 @@ class WBAPIAction(RequestService):
         else:
             request_kwargs["json"] = self.get_body()
 
+        if self.timeout:
+            request_kwargs["timeout"] = self.timeout
+
         return request_kwargs
 
     def get_response_data(self, response: Union[httpx.Response, Coroutine]):
         response_status_code = response.status_code
-        if 200 <= response_status_code < 400:
+        if 200 <= response_status_code < 400 or response_status_code == 429:
             return {} if response_status_code == 204 else response.json()
         else:
             raise GettingDataFromAPIException(
