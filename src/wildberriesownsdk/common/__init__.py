@@ -1,3 +1,3 @@
-all = ["APIKeyIntrospectionException", "GettingDataFromAPIException"]
+from .exceptions import APIKeyIntrospectionException, GettingDataFromAPIException, ThrottlingAPIException
 
-from .exceptions import APIKeyIntrospectionException, GettingDataFromAPIException
+__all__ = ["APIKeyIntrospectionException", "GettingDataFromAPIException", "ThrottlingAPIException"]

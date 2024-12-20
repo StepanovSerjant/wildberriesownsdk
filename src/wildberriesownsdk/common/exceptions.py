@@ -1,6 +1,10 @@
+class APIKeyIntrospectionException(Exception):
+    pass
+
+
 class GettingDataFromAPIException(Exception):
     pass
 
 
-class APIKeyIntrospectionException(Exception):
+class ThrottlingAPIException(Exception):
     pass

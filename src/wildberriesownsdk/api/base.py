@@ -8,7 +8,7 @@ from deepmerge import always_merger
 
 from wildberriesownsdk.api.services import RequestService
 from wildberriesownsdk.common import config
-from wildberriesownsdk.common.exceptions import GettingDataFromAPIException
+from wildberriesownsdk.common.exceptions import GettingDataFromAPIException, ThrottlingAPIException
 from wildberriesownsdk.common.utils import log_response
 
 
@@ -145,8 +145,12 @@ class WBAPIAction(RequestService):
 
     def get_response_data(self, response: Union[httpx.Response, Coroutine]):
         response_status_code = response.status_code
-        if 200 <= response_status_code < 400 or response_status_code == 429:
-            return {} if response_status_code == 204 else response.json()
+        if httpx.codes.OK <= response_status_code < httpx.codes.BAD_REQUEST:
+            return {} if response_status_code == httpx.codes.NO_CONTENT else response.json()
+        elif response_status_code == httpx.codes.TOO_MANY_REQUESTS:
+            raise ThrottlingAPIException(
+                f"Сервис {self.name} не смог получить данные.\n Слишком много запросов на единицу времени"
+            )
         else:
             raise GettingDataFromAPIException(
                 f"Сервис {self.name} не смог получить данные.\n Статус код ответа сервера {response_status_code}"
