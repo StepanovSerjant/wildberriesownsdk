@@ -12,6 +12,7 @@ from wildberriesownsdk.api.introspect import (
 )
 from wildberriesownsdk.api.marketplace import (
     CreateSupplyAPIAction,
+    GetSupplyAPIAction,
     NewOrdersAPIAction,
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
@@ -45,6 +46,12 @@ class WBAPIConnector:
         )
         return orders_statuses_api_action.do()
 
+    def get_supply_info(self, supply_id: str) -> dict:
+        get_supply_info_api_action = GetSupplyAPIAction(
+            api_connector=self, supply_id=supply_id
+        )
+        return get_supply_info_api_action.do()
+
     def create_supply(self, supply_name: str) -> dict:
         create_supply_api_action = CreateSupplyAPIAction(
             api_connector=self, name=supply_name
@@ -54,6 +61,13 @@ class WBAPIConnector:
     def perform_introspect(self) -> WBIntrospectAPIKeySummary:
         introspect_api_action = IntrospectAPIKeyAPIAction(api_connector=self)
         response = introspect_api_action.do()
+
+        if not response.get("ok", False):
+            exception_texts = ["Токен не найден."]
+            if public_error_message := response.get("public_error_message"):
+                exception_texts.append(public_error_message)
+
+            raise APIKeyIntrospectionException(" ".join(exception_texts))
 
         token_summary = response.get("summary", {})
         if not token_summary:

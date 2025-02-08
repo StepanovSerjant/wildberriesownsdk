@@ -34,6 +34,22 @@ class OrdersStatusesAPIAction(WBAPIAction):
         return self._request_body
 
 
+class GetSupplyAPIAction(WBAPIAction):
+    name = "Получить информацию о поставке"
+    help_text = "Возвращает информацию о поставке."
+
+    path = "supplies"
+    method = "GET"
+
+    def __init__(self, api_connector, supply_id: str, page: int = 1):
+        super().__init__(api_connector, page=page)
+        self.supply_id = supply_id
+
+    def get_url(self) -> str:
+        url = super().get_url()
+        return "/".join([url, self.supply_id])
+
+
 class CreateSupplyAPIAction(WBAPIAction):
     name = "Создать новую поставку"
     help_text = "Отсутствует"
