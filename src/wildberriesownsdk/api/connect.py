@@ -40,7 +40,7 @@ class WBAPIConnector:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
         return new_orders_api_action.do()
 
-    @request_per_seconds(seconds=0.7)
+    @request_per_seconds(seconds=0.8)
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
         orders_statuses_body = {"orders": orders_ids}
         orders_statuses_api_action = OrdersStatusesAPIAction(
@@ -48,7 +48,7 @@ class WBAPIConnector:
         )
         return orders_statuses_api_action.do()
 
-    @request_per_seconds(seconds=0.7)
+    @request_per_seconds(seconds=0.8)
     def get_supply_info(self, supply_id: str) -> dict:
         get_supply_info_api_action = GetSupplyAPIAction(
             api_connector=self, supply_id=supply_id
@@ -131,7 +131,7 @@ class WBAPIConnector:
                 api_connector=self, supply_id=supply_id, order_id=order["id"]
             )
             task = asyncio.create_task(async_wb_api_action.async_do())
-            tasks = [task, async_wait(0.5)]
+            tasks = [task, async_wait(0.8)]
 
             order_result, _ = await asyncio.gather(*tasks)
             results.append(order_result)
