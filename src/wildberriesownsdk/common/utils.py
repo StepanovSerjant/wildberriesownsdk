@@ -1,8 +1,7 @@
+import asyncio
 import datetime
-import functools
-import time
 from json import JSONDecodeError
-from typing import Any, Optional
+from typing import Optional, Union
 
 import httpx
 import pytz
@@ -30,21 +29,5 @@ def log_response(response: httpx.Response) -> None:
     logger.info(f"Status code {response.status_code}. Response json: {resp_json}")
 
 
-def retry(target_value: Any, tries: int = 1, delay: int = 1):
-    def func_exc(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            last_value = None
-            for i in range(tries):
-                last_value = func(*args, **kwargs)
-                if target_value == last_value:
-                    break
-
-                if i + 1 < tries:
-                    time.sleep(delay)
-
-            return last_value
-
-        return wrapper
-
-    return func_exc
+async def async_wait(sleep_time: Union[int, float]) -> None:
+    await asyncio.sleep(sleep_time)
