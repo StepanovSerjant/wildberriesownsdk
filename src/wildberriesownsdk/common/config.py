@@ -3,7 +3,7 @@ import sys
 import pytz
 from loguru import logger
 
-BASE_API_URL = "https://suppliers-api.wildberries.ru/api"
+BASE_MARKETPLACE_API_URL = "https://marketplace-api.wildberries.ru/api"
 BASE_CONTENT_API_URL = "https://content-api.wildberries.ru/content"
 
 API_VERSION = "v3"

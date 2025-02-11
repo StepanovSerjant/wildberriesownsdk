@@ -116,7 +116,7 @@ class WBAPIAction(RequestService):
         return {}
 
     def get_url(self) -> str:
-        url = f"{config.BASE_API_URL}/{config.API_VERSION}/{self.path}"
+        url = f"{config.BASE_MARKETPLACE_API_URL}/{config.API_VERSION}/{self.path}"
         query_params = self.get_query_params()
         if query_params:
             url_query = parse.urlencode(query_params)
