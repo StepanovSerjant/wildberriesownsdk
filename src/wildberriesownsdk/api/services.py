@@ -1,27 +1,19 @@
-import abc
-
 import httpx
 
 
 class RequestService:
+    timeout = httpx.Timeout(15.0, connect=30)
 
-    @abc.abstractmethod
-    def get_auth_headers(self) -> dict:
-        raise NotImplementedError("get_auth_headers method have to be implemented")
+    def request(self, *args, **kwargs) -> httpx.Response:
+        request_kwargs = self.update_kwargs_with_timeout(kwargs)
+        return httpx.request(*args, **request_kwargs)
 
-    def request(self, *args, **kwargs):
-        return httpx.request(*args, **self._set_headers(**kwargs))
-
-    async def async_request(self, *args, **kwargs):
+    async def async_request(self, *args, **kwargs) -> httpx.Response:
+        request_kwargs = self.update_kwargs_with_timeout(kwargs)
         async with httpx.AsyncClient() as client:
-            return await client.request(*args, **self._set_headers(**kwargs))
+            return await client.request(*args, **request_kwargs)
 
-    def _set_headers(self, **request_kwargs) -> dict:
-        headers = request_kwargs.get("headers")
-        if headers is None:
-            request_kwargs["headers"] = self.get_auth_headers()
-        else:
-            headers.update(**self.get_auth_headers())
-            request_kwargs["headers"] = headers
-
+    @classmethod
+    def update_kwargs_with_timeout(cls, request_kwargs: dict) -> dict:
+        request_kwargs.setdefault("timeout", cls.timeout)
         return request_kwargs

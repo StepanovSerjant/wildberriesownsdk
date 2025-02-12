@@ -6,7 +6,6 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from wildberriesownsdk.api.enums import WBScope
 from wildberriesownsdk.api.services import RequestService
 from wildberriesownsdk.api import config
 from wildberriesownsdk.common.exceptions import (
@@ -19,13 +18,12 @@ from wildberriesownsdk.common.utils import log_response
 class WBAPIAction(RequestService):
     name = "default"
     help_text = "text about service"
-    scope = None
 
+    scope = None
     path = ""
     method = ""
-    paginated = False
-    timeout = httpx.Timeout(15.0, connect=30)
 
+    paginated = False
     data_field = ""
 
     def __init__(self, api_connector, page: int = 1):
@@ -105,7 +103,7 @@ class WBAPIAction(RequestService):
         log_response(response)
         return response
 
-    async def async_perform_request(self) -> Coroutine:
+    async def async_perform_request(self) -> httpx.Response:
         request_kwargs = self.get_request_kwargs()
         response = await self.async_request(**request_kwargs)
         log_response(response)
