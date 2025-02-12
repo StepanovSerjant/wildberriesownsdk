@@ -57,10 +57,10 @@ class GetSupplyAPIAction(WBAPIAction):
 class CreateSupplyAPIAction(WBAPIAction):
     name = "Создать новую поставку"
     help_text = "Отсутствует"
-    scope = WBScope.MARKETPLACE.value
 
-    path = "supplies"
     method = "POST"
+    path = "supplies"
+    scope = WBScope.MARKETPLACE.value
 
     data_field = "id"
 
