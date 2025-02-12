@@ -12,7 +12,13 @@ MARKETPLACE_API_VERSION = "v3"
 CONTENT_API_VERSION = "v3"
 
 API_SCOPE_DATA_MAP = {
-    WBScope.MARKETPLACE.value: {"url": BASE_MARKETPLACE_API_URL, "api_version": MARKETPLACE_API_VERSION},
-    WBScope.CONTENT.value: {"url": BASE_CONTENT_API_URL, "api_version": CONTENT_API_VERSION},
+    WBScope.MARKETPLACE.value: {
+        "url": BASE_MARKETPLACE_API_URL,
+        "api_version": MARKETPLACE_API_VERSION,
+    },
+    WBScope.CONTENT.value: {
+        "url": BASE_CONTENT_API_URL,
+        "api_version": CONTENT_API_VERSION,
+    },
 }
 API_AVAILABLE_SCOPES = API_SCOPE_DATA_MAP.keys()

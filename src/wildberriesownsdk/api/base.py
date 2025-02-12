@@ -1,4 +1,3 @@
-import abc
 from typing import Any, Coroutine, Union
 from urllib import parse
 
@@ -6,8 +5,8 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from wildberriesownsdk.api.services import RequestService
 from wildberriesownsdk.api import config
+from wildberriesownsdk.api.services import RequestService
 from wildberriesownsdk.common.exceptions import (
     GettingDataFromAPIException,
     ThrottlingAPIException,
@@ -47,7 +46,6 @@ class WBAPIAction(RequestService):
             }
         return {}
 
-    @abc.abstractmethod
     def do(self) -> Any:
         if self.paginated:
             response_data = self.get_merged_response_data()
@@ -62,7 +60,6 @@ class WBAPIAction(RequestService):
             else snaked_response_data
         )
 
-    @abc.abstractmethod
     async def async_do(self) -> Any:
         if self.paginated:
             response_data = self.get_merged_response_data()
