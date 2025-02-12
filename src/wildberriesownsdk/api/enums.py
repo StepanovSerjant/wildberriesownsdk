@@ -25,6 +25,7 @@ class WBStatus(enum.Enum):
     READY_FOR_PICKUP: str = "ready_for_pickup"  # сборочное задание прибыло на ПВЗ
 
 
+@enum.unique
 class WBScope(enum.Enum):
     MARKETPLACE: str = "marketplace"
     CONTENT: str = "content"
