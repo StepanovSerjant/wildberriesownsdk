@@ -6,7 +6,7 @@ from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
 from wildberriesownsdk.api import config
-from wildberriesownsdk.api.services import RequestService
+from wildberriesownsdk.common.services import RequestService
 from wildberriesownsdk.common.exceptions import (
     GettingDataFromAPIException,
     ThrottlingAPIException,
