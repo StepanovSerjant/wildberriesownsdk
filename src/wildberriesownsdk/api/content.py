@@ -22,15 +22,17 @@ class ImageToArticleUploadAction(WBAPIAction):
         self.file = file
         self.files_data = self.read_file(self.file)
 
-    def get_auth_headers(self) -> dict:
-        request_headers = {
+    @property
+    def own_auth_headers(self) -> dict:
+        return {
             "X-Nm-Id": self.article,
             "X-Photo-Number": str(self.image_number),
         }
-        auth_headers = super().get_auth_headers()
 
-        request_headers.update(auth_headers)
-        return request_headers
+    def get_auth_headers(self) -> dict:
+        auth_headers = super().get_auth_headers()
+        auth_headers.update(**self.own_auth_headers)
+        return auth_headers
 
     def get_files(self):
         return self.files_data
