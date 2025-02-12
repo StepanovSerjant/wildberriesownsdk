@@ -18,9 +18,9 @@ class WBAPIAction(RequestService):
     name = "default"
     help_text = "text about service"
 
-    scope = None
-    path = ""
     method = ""
+    path = ""
+    scope = None
 
     paginated = False
     data_field = ""

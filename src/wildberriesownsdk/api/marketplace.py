@@ -7,12 +7,12 @@ class NewOrdersAPIAction(WBAPIAction):
     help_text = (
         "Возвращает список всех новых сборочных заданий у продавца на данный момент"
     )
+
+    method = "GET"
+    path = "orders/new"
     scope = WBScope.MARKETPLACE.value
 
-    path = "orders/new"
-    method = "GET"
     paginated = True
-
     data_field = "orders"
 
 
@@ -22,10 +22,10 @@ class OrdersStatusesAPIAction(WBAPIAction):
         "Возвращает статусы сборочных заданий по переданному списку идентификаторов сборочных заданий."
         "supplierStatus - статус сборочного задания, триггером изменения которого является сам продавец."
     )
-    scope = WBScope.MARKETPLACE.value
 
-    path = "orders/status"
     method = "POST"
+    path = "orders/status"
+    scope = WBScope.MARKETPLACE.value
 
     data_field = "orders"
 
@@ -40,10 +40,10 @@ class OrdersStatusesAPIAction(WBAPIAction):
 class GetSupplyAPIAction(WBAPIAction):
     name = "Получить информацию о поставке"
     help_text = "Возвращает информацию о поставке."
-    scope = WBScope.MARKETPLACE.value
 
-    path = "supplies"
     method = "GET"
+    path = "supplies"
+    scope = WBScope.MARKETPLACE.value
 
     def __init__(self, api_connector, supply_id: str, page: int = 1):
         super().__init__(api_connector, page=page)
@@ -75,10 +75,10 @@ class CreateSupplyAPIAction(WBAPIAction):
 class OrdersToSupplyAPIAction(WBAPIAction):
     name = "Добавить к поставке сборочное задание"
     help_text = "Добавляет к поставке сборочное задание и переводит его в статус confirm ('На сборке')"
-    scope = WBScope.MARKETPLACE.value
 
-    path = "supplies/{supply_id}/orders/{order_id}"
     method = "PATCH"
+    path = "supplies/{supply_id}/orders/{order_id}"
+    scope = WBScope.MARKETPLACE.value
 
     def __init__(self, api_connector, supply_id: str, order_id: int, page: int = 1):
         super().__init__(api_connector=api_connector, page=page)

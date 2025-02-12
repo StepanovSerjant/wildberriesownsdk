@@ -7,10 +7,10 @@ from wildberriesownsdk.api.enums import WBScope
 class ImageToArticleUploadAction(WBAPIAction):
     name = "Загрузить изображение к карточке товара"
     help_text = "Загружает изображение к выбранному артикулу на соответствующую позицию в карточке"
-    scope = WBScope.CONTENT.value
 
-    path = "media/file"
     method = "POST"
+    path = "media/file"
+    scope = WBScope.CONTENT.value
 
     def __init__(
         self, api_connector, article: str, file: Path, image_number: int, page: int = 1
