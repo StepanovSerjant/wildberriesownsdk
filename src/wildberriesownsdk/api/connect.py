@@ -29,12 +29,10 @@ class WBAPIConnector:
         api_key: str,
         scopes: List[str],
         introspect: bool = True,
-        debug: bool = True,
     ) -> None:
         self.api_key = api_key
         self.scopes = scopes
         self.introspect = introspect
-        self.debug = debug
 
     def get_new_orders(self) -> list:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
