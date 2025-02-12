@@ -2,8 +2,8 @@ import datetime
 from dataclasses import dataclass
 from typing import List
 
+from wildberriesownsdk.api import config
 from wildberriesownsdk.api.base import WBAPIAction
-from wildberriesownsdk.common import config
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 
 

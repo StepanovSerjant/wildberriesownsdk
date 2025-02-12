@@ -1,7 +1,7 @@
 from pathlib import Path
 
+from wildberriesownsdk.api import config
 from wildberriesownsdk.api.base import WBAPIAction
-from wildberriesownsdk.common import config
 
 
 class ImageToArticleUploadAction(WBAPIAction):
