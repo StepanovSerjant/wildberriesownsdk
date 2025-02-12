@@ -6,7 +6,7 @@ from typing import Optional, Union
 import httpx
 import pytz
 
-from wildberriesownsdk.common.config import logger
+from wildberriesownsdk.common.settings import logger
 
 
 def get_tz(tz_name: str):
