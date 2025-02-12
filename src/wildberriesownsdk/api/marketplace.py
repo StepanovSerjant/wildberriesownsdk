@@ -1,4 +1,5 @@
 from wildberriesownsdk.api.base import WBAPIAction
+from wildberriesownsdk.api.enums import WBScope
 
 
 class NewOrdersAPIAction(WBAPIAction):
@@ -6,6 +7,7 @@ class NewOrdersAPIAction(WBAPIAction):
     help_text = (
         "Возвращает список всех новых сборочных заданий у продавца на данный момент"
     )
+    scope = WBScope.MARKETPLACE.value
 
     path = "orders/new"
     method = "GET"
@@ -20,6 +22,7 @@ class OrdersStatusesAPIAction(WBAPIAction):
         "Возвращает статусы сборочных заданий по переданному списку идентификаторов сборочных заданий."
         "supplierStatus - статус сборочного задания, триггером изменения которого является сам продавец."
     )
+    scope = WBScope.MARKETPLACE.value
 
     path = "orders/status"
     method = "POST"
@@ -37,6 +40,7 @@ class OrdersStatusesAPIAction(WBAPIAction):
 class GetSupplyAPIAction(WBAPIAction):
     name = "Получить информацию о поставке"
     help_text = "Возвращает информацию о поставке."
+    scope = WBScope.MARKETPLACE.value
 
     path = "supplies"
     method = "GET"
@@ -53,6 +57,7 @@ class GetSupplyAPIAction(WBAPIAction):
 class CreateSupplyAPIAction(WBAPIAction):
     name = "Создать новую поставку"
     help_text = "Отсутствует"
+    scope = WBScope.MARKETPLACE.value
 
     path = "supplies"
     method = "POST"
@@ -70,6 +75,7 @@ class CreateSupplyAPIAction(WBAPIAction):
 class OrdersToSupplyAPIAction(WBAPIAction):
     name = "Добавить к поставке сборочное задание"
     help_text = "Добавляет к поставке сборочное задание и переводит его в статус confirm ('На сборке')"
+    scope = WBScope.MARKETPLACE.value
 
     path = "supplies/{supply_id}/orders/{order_id}"
     method = "PATCH"

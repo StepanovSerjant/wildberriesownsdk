@@ -1,12 +1,13 @@
 from pathlib import Path
 
-from wildberriesownsdk.api import config
 from wildberriesownsdk.api.base import WBAPIAction
+from wildberriesownsdk.api.enums import WBScope
 
 
 class ImageToArticleUploadAction(WBAPIAction):
     name = "Загрузить изображение к карточке товара"
     help_text = "Загружает изображение к выбранному артикулу на соответствующую позицию в карточке"
+    scope = WBScope.CONTENT.value
 
     path = "media/file"
     method = "POST"
@@ -33,9 +34,6 @@ class ImageToArticleUploadAction(WBAPIAction):
 
     def get_files(self):
         return self.files_data
-
-    def get_url(self) -> str:
-        return f"{config.BASE_CONTENT_API_URL}/{config.CONTENT_API_VERSION}/{self.path}"
 
     @staticmethod
     def read_file(file: Path) -> dict:

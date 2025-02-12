@@ -6,8 +6,9 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
+from wildberriesownsdk.api.enums import WBScope
 from wildberriesownsdk.api.services import RequestService
-from wildberriesownsdk.common import config
+from wildberriesownsdk.api import config
 from wildberriesownsdk.common.exceptions import (
     GettingDataFromAPIException,
     ThrottlingAPIException,
@@ -18,6 +19,7 @@ from wildberriesownsdk.common.utils import log_response
 class WBAPIAction(RequestService):
     name = "default"
     help_text = "text about service"
+    scope = None
 
     path = ""
     method = ""
@@ -119,7 +121,14 @@ class WBAPIAction(RequestService):
         return {}
 
     def get_url(self) -> str:
-        url = f"{config.BASE_MARKETPLACE_API_URL}/{config.API_VERSION}/{self.path}"
+        if self.scope not in config.API_AVAILABLE_SCOPES:
+            available_scopes_str = ", ".join(config.API_AVAILABLE_SCOPES)
+            raise ValueError(f"Invalid scope. Use any of: {available_scopes_str}")
+
+        api_url = config.API_SCOPE_DATA_MAP[self.scope]["url"]
+        api_version = config.API_SCOPE_DATA_MAP[self.scope]["api_version"]
+        url = f"{api_url}/{api_version}/{self.path}"
+
         query_params = self.get_query_params()
         if query_params:
             url_query = parse.urlencode(query_params)

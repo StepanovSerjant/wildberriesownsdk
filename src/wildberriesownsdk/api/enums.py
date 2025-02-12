@@ -23,3 +23,8 @@ class WBStatus(enum.Enum):
     )
     DEFECT: str = "defect"  # отмена сборочного задания по причине брака
     READY_FOR_PICKUP: str = "ready_for_pickup"  # сборочное задание прибыло на ПВЗ
+
+
+class WBScope(enum.Enum):
+    MARKETPLACE: str = "marketplace"
+    CONTENT: str = "content"
