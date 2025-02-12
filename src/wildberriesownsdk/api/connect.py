@@ -17,7 +17,7 @@ from wildberriesownsdk.api.marketplace import (
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
 )
-from wildberriesownsdk.common.decorators import request_per_seconds, retry
+from wildberriesownsdk.common.decorators import min_execution_in_seconds, retry
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 from wildberriesownsdk.common.utils import async_wait
 
@@ -40,7 +40,7 @@ class WBAPIConnector:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
         return new_orders_api_action.do()
 
-    @request_per_seconds(seconds=0.8)
+    @min_execution_in_seconds(seconds=0.8)
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
         orders_statuses_body = {"orders": orders_ids}
         orders_statuses_api_action = OrdersStatusesAPIAction(
@@ -48,7 +48,7 @@ class WBAPIConnector:
         )
         return orders_statuses_api_action.do()
 
-    @request_per_seconds(seconds=0.8)
+    @min_execution_in_seconds(seconds=0.8)
     def get_supply_info(self, supply_id: str) -> dict:
         get_supply_info_api_action = GetSupplyAPIAction(
             api_connector=self, supply_id=supply_id

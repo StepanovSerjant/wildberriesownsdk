@@ -23,7 +23,7 @@ def retry(target_value: Any, tries: int = 1, delay: int = 1):
     return func_exc
 
 
-def request_per_seconds(seconds: Union[int, float] = 1):
+def min_execution_in_seconds(seconds: Union[int, float] = 1):
     def func_exc(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
