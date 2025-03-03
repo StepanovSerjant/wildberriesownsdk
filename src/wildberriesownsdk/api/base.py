@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Coroutine, Union
+from typing import Any, Coroutine, Optional, Union
 from urllib import parse
 
 import httpx
@@ -30,6 +30,7 @@ class WBAPIAction(RequestService):
         self.api_key = api_connector.api_key
         self.api_scopes = api_connector.scopes
         self.page = page  # 0 value - disable pagination
+        self.last_response: Optional[httpx.Response] = None
 
     def __str__(self) -> str:
         return (
@@ -99,15 +100,15 @@ class WBAPIAction(RequestService):
 
     def perform_request(self) -> httpx.Response:
         request_kwargs = self.get_request_kwargs()
-        response = self.request(**request_kwargs)
-        log_response(response)
-        return response
+        self.last_response = self.request(**request_kwargs)
+        log_response(self.last_response)
+        return self.last_response
 
-    async def async_perform_request(self) -> Coroutine:
+    async def async_perform_request(self) -> httpx.Response:
         request_kwargs = self.get_request_kwargs()
-        response = await self.async_request(**request_kwargs)
-        log_response(response)
-        return response
+        self.last_response = await self.async_request(**request_kwargs)
+        log_response(self.last_response)
+        return self.last_response
 
     def get_auth_headers(self) -> dict:
         return {"Authorization": self.api_key, "accept": "application/json"}
