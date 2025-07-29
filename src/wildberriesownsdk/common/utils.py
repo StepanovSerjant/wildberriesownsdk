@@ -5,11 +5,12 @@ from typing import Optional, Union
 
 import httpx
 import pytz
+from pytz.tzinfo import StaticTzInfo
 
 from wildberriesownsdk.common.config import logger
 
 
-def get_tz(tz_name: str):
+def get_tz(tz_name: str) -> StaticTzInfo:
     return pytz.timezone(tz_name)
 
 

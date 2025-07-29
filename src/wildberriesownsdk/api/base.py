@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Coroutine, Optional, Union
+from typing import Any, Coroutine, Optional, Union, Dict
 from urllib import parse
 
 import httpx
@@ -26,7 +26,7 @@ class WBAPIAction(RequestService):
 
     data_field = ""
 
-    def __init__(self, api_connector, page: int = 1):
+    def __init__(self, api_connector, page: int = 1) -> None:
         self.api_key = api_connector.api_key
         self.api_scopes = api_connector.scopes
         self.page = page  # 0 value - disable pagination
@@ -40,7 +40,7 @@ class WBAPIAction(RequestService):
         )
 
     @property
-    def pagination_query_params(self) -> dict:
+    def pagination_query_params(self) -> Dict[str, Union[str, int]]:
         if self.paginated:
             return {
                 "limit": 100,
@@ -78,7 +78,7 @@ class WBAPIAction(RequestService):
             else snaked_response_data
         )
 
-    def get_merged_response_data(self):
+    def get_merged_response_data(self) -> Dict[str, Any]:
         merged_response_data = {}
 
         start_page = self.page
@@ -110,13 +110,13 @@ class WBAPIAction(RequestService):
         log_response(self.last_response)
         return self.last_response
 
-    def get_auth_headers(self) -> dict:
+    def get_auth_headers(self) -> Dict[str, str]:
         return {"Authorization": self.api_key, "accept": "application/json"}
 
-    def get_body(self) -> dict:
+    def get_body(self) -> Dict[str, Any]:
         return {}
 
-    def get_files(self) -> dict:
+    def get_files(self) -> Dict[str, Any]:
         return {}
 
     def get_url(self) -> str:
@@ -128,10 +128,10 @@ class WBAPIAction(RequestService):
 
         return url
 
-    def get_query_params(self) -> dict:
+    def get_query_params(self) -> Dict[str, Union[str, int]]:
         return self.pagination_query_params
 
-    def get_request_kwargs(self) -> dict:
+    def get_request_kwargs(self) -> Dict[str, Any]:
         request_kwargs = {
             "method": self.method,
             "url": self.get_url(),
@@ -147,7 +147,7 @@ class WBAPIAction(RequestService):
 
         return request_kwargs
 
-    def get_response_data(self, response: Union[httpx.Response, Coroutine]):
+    def get_response_data(self, response: Union[httpx.Response, Coroutine]) -> Dict[str, Any]:
         response_status_code = response.status_code
         if httpx.codes.OK <= response_status_code < httpx.codes.BAD_REQUEST:
             return (
