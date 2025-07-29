@@ -24,14 +24,15 @@ class ImageToArticleUploadAction(WBAPIAction):
         self.files_data = self.read_file(self.file)
 
     def get_auth_headers(self):
+        auth_headers = super().get_auth_headers()
         request_headers = {
             "X-Nm-Id": self.article,
             "X-Photo-Number": str(self.image_number),
         }
-        auth_headers = super().get_auth_headers()
-
-        request_headers.update(auth_headers)
-        return request_headers
+        return {
+            **auth_headers,
+            **request_headers,
+        }
 
     def get_files(self):
         return self.files_data

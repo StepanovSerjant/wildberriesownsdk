@@ -6,8 +6,7 @@ import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from wildberriesownsdk.api.services import RequestService
-from wildberriesownsdk.common import config
+from wildberriesownsdk.common import config, http
 from wildberriesownsdk.common.exceptions import (
     GettingDataFromAPIException,
     ThrottlingAPIException,
@@ -15,7 +14,7 @@ from wildberriesownsdk.common.exceptions import (
 from wildberriesownsdk.common.utils import log_response
 
 
-class WBAPIAction(RequestService):
+class WBAPIAction:
     name = "default"
     help_text = "text about service"
 
@@ -100,13 +99,13 @@ class WBAPIAction(RequestService):
 
     def perform_request(self) -> httpx.Response:
         request_kwargs = self.get_request_kwargs()
-        self.last_response = self.request(**request_kwargs)
+        self.last_response = http.request(**request_kwargs)
         log_response(self.last_response)
         return self.last_response
 
     async def async_perform_request(self) -> httpx.Response:
         request_kwargs = self.get_request_kwargs()
-        self.last_response = await self.async_request(**request_kwargs)
+        self.last_response = await http.async_request(**request_kwargs)
         log_response(self.last_response)
         return self.last_response
 
