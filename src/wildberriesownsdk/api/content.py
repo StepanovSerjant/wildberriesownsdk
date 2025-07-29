@@ -1,4 +1,6 @@
+from io import BufferedReader
 from pathlib import Path
+from typing import Dict
 
 from wildberriesownsdk.api.base import WBAPIAction
 from wildberriesownsdk.common import config
@@ -13,7 +15,7 @@ class ImageToArticleUploadAction(WBAPIAction):
 
     def __init__(
         self, api_connector, article: str, file: Path, image_number: int, page: int = 1
-    ):
+    ) -> None:
         super().__init__(api_connector, page=page)
 
         self.article = article
@@ -21,7 +23,7 @@ class ImageToArticleUploadAction(WBAPIAction):
         self.file = file
         self.files_data = self.read_file(self.file)
 
-    def get_auth_headers(self) -> dict:
+    def get_auth_headers(self):
         request_headers = {
             "X-Nm-Id": self.article,
             "X-Photo-Number": str(self.image_number),
@@ -38,6 +40,5 @@ class ImageToArticleUploadAction(WBAPIAction):
         return f"{config.BASE_CONTENT_API_URL}/{config.CONTENT_API_VERSION}/{self.path}"
 
     @staticmethod
-    def read_file(file: Path) -> dict:
-        files_data = {"uploadfile": open(file, "rb")}
-        return files_data
+    def read_file(file: Path) -> Dict[str, BufferedReader]:
+        return {"uploadfile": open(file, "rb")}

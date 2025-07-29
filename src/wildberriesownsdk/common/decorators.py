@@ -1,10 +1,10 @@
 import functools
 import time
-from typing import Any, Union
+from typing import Any, Union, Callable
 
 
-def retry(target_value: Any, tries: int = 1, delay: int = 1):
-    def func_exc(func):
+def retry(target_value: Any, tries: int = 1, delay: int = 1) -> Any:
+    def func_exc(func: Callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             last_value = None
@@ -23,8 +23,8 @@ def retry(target_value: Any, tries: int = 1, delay: int = 1):
     return func_exc
 
 
-def request_per_seconds(seconds: Union[int, float] = 1):
-    def func_exc(func):
+def request_per_seconds(seconds: Union[int, float] = 1) -> Any:
+    def func_exc(func: Callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
