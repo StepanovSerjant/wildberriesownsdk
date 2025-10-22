@@ -21,15 +21,21 @@ class WBAPIAction(RequestService):
 
     path = ""
     method = ""
-    paginated = False
     timeout = httpx.Timeout(15.0, connect=30)
+
+    paginated = False
+    merge_data_if_paginated = True
 
     data_field = ""
 
-    def __init__(self, api_connector, page: int = 1):
+    def __init__(self, api_connector, page: int = 1, per_page: int = 100):
+        if per_page > 1000:
+            raise ValueError("per_page argument should be in range 1-1000")
+
         self.api_key = api_connector.api_key
         self.api_scopes = api_connector.scopes
         self.page = page  # 0 value - disable pagination
+        self.per_page = per_page
         self.last_response: Optional[httpx.Response] = None
 
     def __str__(self) -> str:
@@ -43,14 +49,14 @@ class WBAPIAction(RequestService):
     def pagination_query_params(self) -> dict:
         if self.paginated:
             return {
-                "limit": 100,
+                "limit": self.per_page,
                 "next": self.page,
             }
         return {}
 
     @abc.abstractmethod
     def do(self) -> Any:
-        if self.paginated:
+        if self.paginated and self.merge_data_if_paginated:
             response_data = self.get_merged_response_data()
         else:
             response = self.perform_request()
