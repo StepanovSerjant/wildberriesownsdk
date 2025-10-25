@@ -1,6 +1,7 @@
 import asyncio
+import datetime
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable, List, Optional, Dict, Union
 
 from loguru import logger
 
@@ -14,9 +15,11 @@ from wildberriesownsdk.api.marketplace import (
     CreateSupplyAPIAction,
     GetSupplyAPIAction,
     NewOrdersAPIAction,
+    OrdersAPIAction,
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
 )
+from wildberriesownsdk.api.prices_and_discounts import UploadPricesAndDiscountsAPIAction
 from wildberriesownsdk.common.decorators import request_per_seconds, retry
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 from wildberriesownsdk.common.utils import async_wait
@@ -36,9 +39,23 @@ class WBAPIConnector:
         self.introspect = introspect
         self.debug = debug
 
+    def update_prices_and_discounts(self, goods: List[Dict[str, Union[int, float]]]):
+        update_prices_and_discounts_api_action = UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
+        return update_prices_and_discounts_api_action.do()
+
     def get_new_orders(self) -> list:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
         return new_orders_api_action.do()
+
+    def get_orders(self, page: int = 1, per_page: int = 100, date_from: Optional[datetime.datetime] = None, date_to: Optional[datetime.datetime] = None):
+        orders_api_action = OrdersAPIAction(
+            api_connector=self,
+            page=page,
+            per_page=per_page,
+            date_from=date_from,
+            date_to=date_to,
+        )
+        return orders_api_action.do()
 
     @request_per_seconds(seconds=0.8)
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:

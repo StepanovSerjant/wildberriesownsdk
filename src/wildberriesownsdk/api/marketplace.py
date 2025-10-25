@@ -1,4 +1,35 @@
+import datetime
+from typing import Optional
+
 from wildberriesownsdk.api.base import WBAPIAction
+
+
+class OrdersAPIAction(WBAPIAction):
+    name = "Получить список сборочных заданий"
+    help_text = (
+        "Возвращает список всех сборочных заданий у продавца на данный момент"
+    )
+
+    path = "orders"
+    method = "GET"
+
+    paginated = True
+    merge_data_if_paginated = False
+
+    def __init__(self, api_connector, date_from: Optional[datetime.datetime] = None, date_to: Optional[datetime.datetime] = None, page: int = 1, per_page: int = 100):
+        super().__init__(api_connector, page=page, per_page=per_page)
+        self._date_from = date_from
+        self._date_to = date_to
+
+    def get_query_params(self):
+        query_params = super().get_query_params()
+        if self._date_from:
+            query_params.update(date_from=self._date_from.timestamp())
+
+        if self._date_to:
+            query_params.update(date_to=self._date_to.timestamp())
+
+        return query_params
 
 
 class NewOrdersAPIAction(WBAPIAction):
@@ -26,8 +57,8 @@ class OrdersStatusesAPIAction(WBAPIAction):
 
     data_field = "orders"
 
-    def __init__(self, api_connector, body: dict, page: int = 1):
-        super().__init__(api_connector, page=page)
+    def __init__(self, api_connector, body: dict, page: int = 1, per_page: int = 100):
+        super().__init__(api_connector, page=page, per_page=per_page)
         self._request_body = body
 
     def get_body(self) -> dict:
@@ -41,8 +72,8 @@ class GetSupplyAPIAction(WBAPIAction):
     path = "supplies"
     method = "GET"
 
-    def __init__(self, api_connector, supply_id: str, page: int = 1):
-        super().__init__(api_connector, page=page)
+    def __init__(self, api_connector, supply_id: str, page: int = 1, per_page: int = 100):
+        super().__init__(api_connector, page=page, per_page=per_page)
         self.supply_id = supply_id
 
     def get_url(self) -> str:
@@ -59,8 +90,8 @@ class CreateSupplyAPIAction(WBAPIAction):
 
     data_field = "id"
 
-    def __init__(self, api_connector, name: str, page: int = 1):
-        super().__init__(api_connector, page=page)
+    def __init__(self, api_connector, name: str, page: int = 1, per_page: int = 100):
+        super().__init__(api_connector, page=page, per_page=per_page)
         self._body_name = name
 
     def get_body(self) -> dict:
@@ -74,8 +105,8 @@ class OrdersToSupplyAPIAction(WBAPIAction):
     path = "supplies/{supply_id}/orders/{order_id}"
     method = "PATCH"
 
-    def __init__(self, api_connector, supply_id: str, order_id: int, page: int = 1):
-        super().__init__(api_connector=api_connector, page=page)
+    def __init__(self, api_connector, supply_id: str, order_id: int, page: int = 1, per_page: int = 100):
+        super().__init__(api_connector, page=page, per_page=per_page)
         self.supply_id = supply_id
         self.order_id = order_id
 
