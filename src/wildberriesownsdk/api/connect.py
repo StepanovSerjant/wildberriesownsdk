@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 from pathlib import Path
-from typing import Iterable, List, Optional, Dict, Union
+from typing import Iterable, List, Optional, Dict, Union, Sequence
 
 from loguru import logger
 
@@ -39,7 +39,7 @@ class WBAPIConnector:
         self.introspect = introspect
         self.debug = debug
 
-    def update_prices_and_discounts(self, goods: List[Dict[str, Union[int, float]]]):
+    def update_prices_and_discounts(self, goods: Sequence[Dict[str, Union[int, float]]]):
         update_prices_and_discounts_api_action = UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
         return update_prices_and_discounts_api_action.do()
 

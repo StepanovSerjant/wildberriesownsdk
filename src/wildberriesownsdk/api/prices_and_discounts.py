@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Union
+from typing import Dict, Union, Sequence
 
 from wildberriesownsdk.api.base import WBAPIAction
 from wildberriesownsdk.common import config
@@ -24,7 +24,7 @@ class UploadPricesAndDiscountsAPIAction(WBAPIAction):
     path = "upload/task"
     method = "POST"
 
-    def __init__(self, api_connector, goods: List[Dict[str, Union[int, float]]], page: int = 1, per_page: int = 100):
+    def __init__(self, api_connector, goods: Sequence[Dict[str, Union[int, float]]], page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
         self.goods = goods
 

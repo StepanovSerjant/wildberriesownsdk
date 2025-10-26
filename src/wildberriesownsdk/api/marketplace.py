@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from wildberriesownsdk.api.base import WBAPIAction
 
@@ -16,19 +15,18 @@ class OrdersAPIAction(WBAPIAction):
     paginated = True
     merge_data_if_paginated = False
 
-    def __init__(self, api_connector, date_from: Optional[datetime.datetime] = None, date_to: Optional[datetime.datetime] = None, page: int = 1, per_page: int = 100):
+    def __init__(self, api_connector, date_from: datetime.datetime, date_to: datetime.datetime, page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
         self._date_from = date_from
         self._date_to = date_to
 
     def get_query_params(self):
         query_params = super().get_query_params()
-        if self._date_from:
-            query_params.update(date_from=self._date_from.timestamp())
-
-        if self._date_to:
-            query_params.update(date_to=self._date_to.timestamp())
-
+        date_query_params = {
+            "dateFrom": int(self._date_from.timestamp()),
+            "dateTo": int(self._date_to.timestamp()),
+        }
+        query_params.update(date_query_params)
         return query_params
 
 
