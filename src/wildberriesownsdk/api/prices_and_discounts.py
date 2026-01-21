@@ -1,5 +1,5 @@
 from dataclasses import dataclass, asdict
-from typing import Dict, Union, Sequence, Optional
+from typing import Dict, Union, Sequence, Optional, List
 
 from wildberriesownsdk.api.base import WBAPIAction
 from wildberriesownsdk.common import config
@@ -65,3 +65,26 @@ class GetProductsWithPricesAction(WBAPIAction):
             query_params.update(offset=self.offset)
 
         return query_params
+
+
+class GetProductsWithPricesByArticlesAction(WBAPIAction):
+    """
+    https://dev.wildberries.ru/en/openapi/work-with-products/#tag/Prices-and-Discounts/paths/~1api~1v2~1list~1goods~1filter/post
+    """
+    name = "Получить товары с ценами по списку артикулов"
+    help_text = "Отсутствует"
+
+    path = "list/goods/filter"
+    method = "POST"
+
+    data_field = "data"
+
+    def __init__(self, api_connector, nm_ids: List[int], page: int = 1, per_page: int = 100):
+        super().__init__(api_connector, page=page, per_page=per_page)
+        self.nm_ids = nm_ids
+
+    def get_url(self) -> str:
+        return f"{config.BASE_PRICES_AND_DISCOUNTS_API_URL}/{config.PRICES_AND_DISCOUNTS_API_VERSION}/{self.path}"
+
+    def get_body(self) -> dict:
+        return {"nmList": self.nm_ids}

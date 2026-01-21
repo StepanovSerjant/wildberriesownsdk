@@ -19,7 +19,8 @@ from wildberriesownsdk.api.marketplace import (
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
 )
-from wildberriesownsdk.api.prices_and_discounts import UploadPricesAndDiscountsAPIAction, GetProductsWithPricesAction
+from wildberriesownsdk.api.prices_and_discounts import UploadPricesAndDiscountsAPIAction, GetProductsWithPricesAction, \
+    GetProductsWithPricesByArticlesAction
 from wildberriesownsdk.common.decorators import request_per_seconds, retry
 from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
 from wildberriesownsdk.common.utils import async_wait
@@ -72,6 +73,13 @@ class WBAPIConnector:
             offset=offset,
         )
         return products_with_prices_api_action.do()
+
+    def get_products_with_prices_by_articles(self, nm_ids: List[int]) -> dict:
+        products_with_prices_by_articles_api_action = GetProductsWithPricesByArticlesAction(
+            api_connector=self,
+            nm_ids=nm_ids,
+        )
+        return products_with_prices_by_articles_api_action.do()
 
     @request_per_seconds(seconds=0.8)
     def get_supply_info(self, supply_id: str) -> dict:
