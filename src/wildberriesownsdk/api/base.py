@@ -1,15 +1,18 @@
 import abc
-from typing import Any, Coroutine, Union, List
+from typing import Any, Coroutine, Optional, Union
 from urllib import parse
 
 import httpx
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
-from services import RequestService
-from common import config
-from common.exceptions import GettingDataFromAPIException
-from common.utils import log_response, get_tz
+from wildberriesownsdk.api.services import RequestService
+from wildberriesownsdk.common import config
+from wildberriesownsdk.common.exceptions import (
+    GettingDataFromAPIException,
+    ThrottlingAPIException,
+)
+from wildberriesownsdk.common.utils import log_response
 
 
 class WBAPIAction(RequestService):
@@ -18,15 +21,22 @@ class WBAPIAction(RequestService):
 
     path = ""
     method = ""
+    timeout = httpx.Timeout(15.0, connect=30)
+
     paginated = False
+    merge_data_if_paginated = True
 
     data_field = ""
 
-    def __init__(self, api_key: str, api_scopes: List[str], tz_name: str, page: int = 1):
-        self.api_key = api_key
-        self.api_scopes = api_scopes
-        self.tz = get_tz(tz_name)
+    def __init__(self, api_connector, page: int = 1, per_page: int = 100):
+        if per_page > 1000:
+            raise ValueError("per_page argument should be in range 1-1000")
+
+        self.api_key = api_connector.api_key
+        self.api_scopes = api_connector.scopes
         self.page = page  # 0 value - disable pagination
+        self.per_page = per_page
+        self.last_response: Optional[httpx.Response] = None
 
     def __str__(self) -> str:
         return (
@@ -35,9 +45,18 @@ class WBAPIAction(RequestService):
             else f"WB Сервис {self.name}"
         )
 
+    @property
+    def pagination_query_params(self) -> dict:
+        if self.paginated:
+            return {
+                "limit": self.per_page,
+                "next": self.page,
+            }
+        return {}
+
     @abc.abstractmethod
     def do(self) -> Any:
-        if self.paginated:
+        if self.paginated and self.merge_data_if_paginated:
             response_data = self.get_merged_response_data()
         else:
             response = self.perform_request()
@@ -86,33 +105,16 @@ class WBAPIAction(RequestService):
         return merged_response_data
 
     def perform_request(self) -> httpx.Response:
-        response = self.request(
-            method=self.method,
-            url=self.get_url(),
-            json=self.get_body(),
-            headers=self.get_auth_headers(),
-        )
-        log_response(response)
-        return response
+        request_kwargs = self.get_request_kwargs()
+        self.last_response = self.request(**request_kwargs)
+        log_response(self.last_response)
+        return self.last_response
 
-    async def async_perform_request(self) -> Coroutine:
-        response = await self.async_request(
-            method=self.method,
-            url=self.get_url(),
-            json=self.get_body(),
-            headers=self.get_auth_headers(),
-        )
-        log_response(response)
-        return response
-
-    @property
-    def pagination_query_params(self) -> dict:
-        if self.paginated:
-            return {
-                "limit": 100,
-                "next": self.page,
-            }
-        return {}
+    async def async_perform_request(self) -> httpx.Response:
+        request_kwargs = self.get_request_kwargs()
+        self.last_response = await self.async_request(**request_kwargs)
+        log_response(self.last_response)
+        return self.last_response
 
     def get_auth_headers(self) -> dict:
         return {"Authorization": self.api_key, "accept": "application/json"}
@@ -120,8 +122,11 @@ class WBAPIAction(RequestService):
     def get_body(self) -> dict:
         return {}
 
+    def get_files(self) -> dict:
+        return {}
+
     def get_url(self) -> str:
-        url = f"{config.BASE_API_URL}/{config.API_VERSION}/{self.path}"
+        url = f"{config.BASE_MARKETPLACE_API_URL}/{config.API_VERSION}/{self.path}"
         query_params = self.get_query_params()
         if query_params:
             url_query = parse.urlencode(query_params)
@@ -132,10 +137,34 @@ class WBAPIAction(RequestService):
     def get_query_params(self) -> dict:
         return self.pagination_query_params
 
+    def get_request_kwargs(self) -> dict:
+        request_kwargs = {
+            "method": self.method,
+            "url": self.get_url(),
+            "headers": self.get_auth_headers(),
+        }
+        if self.method == "POST" and (files_data := self.get_files()):
+            request_kwargs["files"] = files_data
+        else:
+            request_kwargs["json"] = self.get_body()
+
+        if self.timeout:
+            request_kwargs["timeout"] = self.timeout
+
+        return request_kwargs
+
     def get_response_data(self, response: Union[httpx.Response, Coroutine]):
         response_status_code = response.status_code
-        if 200 <= response_status_code < 400:
-            return {} if response_status_code == 204 else response.json()
+        if httpx.codes.OK <= response_status_code < httpx.codes.BAD_REQUEST:
+            return (
+                {}
+                if response_status_code == httpx.codes.NO_CONTENT
+                else response.json()
+            )
+        elif response_status_code == httpx.codes.TOO_MANY_REQUESTS:
+            raise ThrottlingAPIException(
+                f"Сервис {self.name} не смог получить данные.\n Слишком много запросов на единицу времени"
+            )
         else:
             raise GettingDataFromAPIException(
                 f"Сервис {self.name} не смог получить данные.\n Статус код ответа сервера {response_status_code}"

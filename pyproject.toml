@@ -1,0 +1,26 @@
+[build-system]
+requires=["setuptools>=66.0"]
+build-backend="setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data=true
+
+[tool.setuptools.packages.find]
+where=["src"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project]
+name="wildberriesownsdk"
+version="0.1"
+readme="README.md"
+authors=[
+    {name="Aleksey Stepanov", email="stpnvlks@gmail.com"},
+]
+description="Wildberries API SDK. (not official)"
+requires-python=">=3.8"
+classifiers=[
+    "Programming Language :: Python :: 3.8",
+]
+dynamic = ["dependencies"]
