@@ -5,13 +5,9 @@ from typing import Iterable, List, Optional, Dict, Union, Sequence
 
 from loguru import logger
 
-from wildberriesownsdk.api.content import ImageToArticleUploadAction
+from wildberriesownsdk.api.actions.content import ImageToArticleUploadAction
 from wildberriesownsdk.api.enums import SupplyStatus
-from wildberriesownsdk.api.introspect import (
-    IntrospectAPIKeyAPIAction,
-    WBIntrospectAPIKeySummary,
-)
-from wildberriesownsdk.api.marketplace import (
+from wildberriesownsdk.api.actions.marketplace import (
     CreateSupplyAPIAction,
     GetSupplyAPIAction,
     NewOrdersAPIAction,
@@ -19,11 +15,13 @@ from wildberriesownsdk.api.marketplace import (
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
 )
-from wildberriesownsdk.api.prices_and_discounts import UploadPricesAndDiscountsAPIAction, GetProductsWithPricesAction, \
-    GetProductsWithPricesByArticlesAction
-from wildberriesownsdk.common.decorators import request_per_seconds, retry
-from wildberriesownsdk.common.exceptions import APIKeyIntrospectionException
-from wildberriesownsdk.common.utils import async_wait
+from wildberriesownsdk.api.actions.prices_and_discounts import (
+    UploadPricesAndDiscountsAPIAction,
+    GetProductsWithPricesAction,
+    GetProductsWithPricesByArticlesAction,
+)
+from wildberriesownsdk.core.decorators import request_per_seconds, retry
+from wildberriesownsdk.core.helpers import async_wait
 
 
 class WBAPIConnector:
@@ -93,40 +91,6 @@ class WBAPIConnector:
             api_connector=self, name=supply_name
         )
         return create_supply_api_action.do()
-
-    def perform_introspect(self) -> WBIntrospectAPIKeySummary:
-        introspect_api_action = IntrospectAPIKeyAPIAction(api_connector=self)
-        response = introspect_api_action.do()
-
-        if not response.get("ok", False):
-            exception_texts = ["Токен не найден."]
-            if public_error_message := response.get("public_error_message"):
-                exception_texts.append(public_error_message)
-
-            raise APIKeyIntrospectionException(" ".join(exception_texts))
-
-        token_summary = response.get("summary", {})
-        if not token_summary:
-            raise APIKeyIntrospectionException(
-                "Не удалось получить информацию о токене."
-            )
-
-        summary_fields_to_exclude = (
-            "token_id",
-            "x_supplier_id",
-        )
-        for field in summary_fields_to_exclude:
-            token_summary.pop(field, None)
-
-        introspect_summary = WBIntrospectAPIKeySummary(**token_summary)
-        if not all(
-            [scope in introspect_summary.scopes_decoded for scope in self.scopes]
-        ):
-            raise APIKeyIntrospectionException(
-                "Ваш API токен не обладает определенными правами для действий скрипта."
-            )
-
-        return introspect_summary
 
     def put_orders_into_supply(self, supply_id: str, orders: iter) -> None:
         asyncio.run(self.async_put_orders_to_supply(supply_id, orders))

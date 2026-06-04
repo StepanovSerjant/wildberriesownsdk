@@ -3,7 +3,7 @@ import time
 from typing import Any, Union
 
 
-def retry(target_value: Any, tries: int = 1, delay: int = 1):
+def retry(target_value: Any, tries: int = 1, delay: int = 1) -> Any:
     def func_exc(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -23,7 +23,7 @@ def retry(target_value: Any, tries: int = 1, delay: int = 1):
     return func_exc
 
 
-def request_per_seconds(seconds: Union[int, float] = 1):
+def request_per_seconds(seconds: Union[int, float] = 1) -> Any:
     def func_exc(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):

@@ -1,7 +1,3 @@
-class APIKeyIntrospectionException(Exception):
-    pass
-
-
 class GettingDataFromAPIException(Exception):
     pass
 

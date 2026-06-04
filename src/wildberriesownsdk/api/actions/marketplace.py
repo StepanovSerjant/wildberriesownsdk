@@ -1,19 +1,25 @@
 import datetime
+from http import HTTPMethod
 
-from wildberriesownsdk.api.base import WBAPIAction
+from wildberriesownsdk.api.actions.base import WBAPIAction
 
 
-class OrdersAPIAction(WBAPIAction):
+class MarketPlaceAPIDetailsMixin:
+    api_url = "https://marketplace-api.wildberries.ru/api"
+    api_version = "v3"
+
+
+class OrdersAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Получить список сборочных заданий"
-    help_text = (
+    description = (
         "Возвращает список всех сборочных заданий у продавца на данный момент"
     )
 
     path = "orders"
-    method = "GET"
+    method = HTTPMethod.GET
 
-    paginated = True
-    merge_data_if_paginated = False
+    has_pagination = True
+    collect_all_pages_if_paginated = False
 
     def __init__(self, api_connector, date_from: datetime.datetime, date_to: datetime.datetime, page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
@@ -30,30 +36,30 @@ class OrdersAPIAction(WBAPIAction):
         return query_params
 
 
-class NewOrdersAPIAction(WBAPIAction):
+class NewOrdersAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Получить список новых сборочных заданий"
-    help_text = (
+    description = (
         "Возвращает список всех новых сборочных заданий у продавца на данный момент"
     )
 
     path = "orders/new"
-    method = "GET"
-    paginated = True
+    method = HTTPMethod.GET
+    has_pagination = True
 
-    data_field = "orders"
+    root_data_field = "orders"
 
 
-class OrdersStatusesAPIAction(WBAPIAction):
+class OrdersStatusesAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Получить статусы сборочных заданий"
-    help_text = (
+    description = (
         "Возвращает статусы сборочных заданий по переданному списку идентификаторов сборочных заданий."
         "supplierStatus - статус сборочного задания, триггером изменения которого является сам продавец."
     )
 
     path = "orders/status"
-    method = "POST"
+    method = HTTPMethod.GET
 
-    data_field = "orders"
+    root_data_field = "orders"
 
     def __init__(self, api_connector, body: dict, page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
@@ -63,12 +69,12 @@ class OrdersStatusesAPIAction(WBAPIAction):
         return self._request_body
 
 
-class GetSupplyAPIAction(WBAPIAction):
+class GetSupplyAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Получить информацию о поставке"
-    help_text = "Возвращает информацию о поставке."
+    description = "Возвращает информацию о поставке."
 
     path = "supplies"
-    method = "GET"
+    method = HTTPMethod.PATCH
 
     def __init__(self, api_connector, supply_id: str, page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
@@ -79,14 +85,13 @@ class GetSupplyAPIAction(WBAPIAction):
         return "/".join([url, self.supply_id])
 
 
-class CreateSupplyAPIAction(WBAPIAction):
+class CreateSupplyAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Создать новую поставку"
-    help_text = "Отсутствует"
 
     path = "supplies"
-    method = "POST"
+    method = HTTPMethod.POST
 
-    data_field = "id"
+    root_data_field = "id"
 
     def __init__(self, api_connector, name: str, page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
@@ -96,18 +101,18 @@ class CreateSupplyAPIAction(WBAPIAction):
         return {"name": self._body_name}
 
 
-class OrdersToSupplyAPIAction(WBAPIAction):
+class OrdersToSupplyAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Добавить к поставке сборочное задание"
-    help_text = "Добавляет к поставке сборочное задание и переводит его в статус confirm ('На сборке')"
+    description = "Добавляет к поставке сборочное задание и переводит его в статус confirm ('На сборке')"
 
     path = "supplies/{supply_id}/orders/{order_id}"
-    method = "PATCH"
+    method = HTTPMethod.PATCH
 
     def __init__(self, api_connector, supply_id: str, order_id: int, page: int = 1, per_page: int = 100):
         super().__init__(api_connector, page=page, per_page=per_page)
         self.supply_id = supply_id
         self.order_id = order_id
 
-    def get_url(self) -> str:
+    def get_url(self):
         query_map = {"supply_id": self.supply_id, "order_id": self.order_id}
         return super().get_url().format(**query_map)
