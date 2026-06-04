@@ -143,6 +143,17 @@ class WBAPIConnector:
             file=file,
         )
 
+    def upload_image_to_article(
+        self, article: str, file: Union[str, Path], image_number: int
+    ):
+        file = Path(file) if isinstance(file, str) else file
+        action = self.create_upload_image_to_article_action(
+            article, file, image_number
+        )
+        return action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
+
     @retry(target_value=True, tries=3)
     def is_all_orders_on_confirm(self, orders_ids: Iterable[int]) -> bool:
         orders_with_updated_statuses = self.get_orders_statuses(orders_ids)
