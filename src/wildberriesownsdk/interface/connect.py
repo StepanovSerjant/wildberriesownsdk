@@ -20,7 +20,6 @@ from wildberriesownsdk.api.actions import (
 from wildberriesownsdk.api.actions.base import WBAPIAction
 from wildberriesownsdk.api.enums import SupplyStatus
 from wildberriesownsdk.api.exceptions import WBAPIForbiddenException
-from wildberriesownsdk.core.decorators import request_per_seconds, retry
 from wildberriesownsdk.core.helpers import async_wait
 
 
@@ -73,7 +72,6 @@ class WBAPIConnector:
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
 
-    @request_per_seconds(seconds=0.8)
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
         orders_statuses_body = {"orders": orders_ids}
         orders_statuses_api_action = OrdersStatusesAPIAction(
@@ -111,7 +109,6 @@ class WBAPIConnector:
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
 
-    @request_per_seconds(seconds=0.8)
     def get_supply_info(self, supply_id: str) -> dict:
         get_supply_info_api_action = GetSupplyAPIAction(
             api_connector=self, supply_id=supply_id
@@ -165,7 +162,6 @@ class WBAPIConnector:
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
 
-    @retry(target_value=True, tries=3)
     def is_all_orders_on_confirm(self, orders_ids: Iterable[int]) -> bool:
         orders_with_updated_statuses = self.get_orders_statuses(orders_ids)
         return all(
