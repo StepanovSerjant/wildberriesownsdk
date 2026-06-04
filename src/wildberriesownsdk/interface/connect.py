@@ -20,7 +20,6 @@ from wildberriesownsdk.api.actions import (
 from wildberriesownsdk.api.actions.base import WBAPIAction
 from wildberriesownsdk.api.enums import SupplyStatus
 from wildberriesownsdk.api.exceptions import WBAPIForbiddenException
-from wildberriesownsdk.core.helpers import async_wait
 
 
 class WBAPIConnector:
@@ -185,7 +184,7 @@ class WBAPIConnector:
                     convert_to_snake_case=self.convert_to_snake_case,
                 )
             )
-            tasks = [task, async_wait(0.8)]
+            tasks = [task, asyncio.sleep(0.8)]
 
             order_result, _ = await asyncio.gather(*tasks)
             results.append(order_result)
