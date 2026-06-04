@@ -2,21 +2,21 @@ class WBAPIException(Exception):
     pass
 
 
-class WBAPIBadRequestException(Exception):
+class WBAPIBadRequestException(WBAPIException):
     pass
 
 
-class WBAPIUnauthorizedException(Exception):
+class WBAPIUnauthorizedException(WBAPIException):
     pass
 
 
-class WBAPIForbiddenException(Exception):
+class WBAPIForbiddenException(WBAPIException):
     pass
 
 
-class WBAPINotFoundException(Exception):
+class WBAPINotFoundException(WBAPIException):
     pass
 
 
-class WBAPIThrottlingException(Exception):
+class WBAPIThrottlingException(WBAPIException):
     pass
