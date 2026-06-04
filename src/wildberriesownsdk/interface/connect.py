@@ -1,12 +1,11 @@
 import asyncio
 import datetime
 from pathlib import Path
-from typing import Iterable, List, Optional, Dict, Union, Sequence
+from typing import Dict, Iterable, List, Optional, Sequence, Union
 
 from loguru import logger
 
 from wildberriesownsdk.api.actions.content import ImageToArticleUploadAction
-from wildberriesownsdk.api.enums import SupplyStatus
 from wildberriesownsdk.api.actions.marketplace import (
     CreateSupplyAPIAction,
     GetSupplyAPIAction,
@@ -16,16 +15,16 @@ from wildberriesownsdk.api.actions.marketplace import (
     OrdersToSupplyAPIAction,
 )
 from wildberriesownsdk.api.actions.prices_and_discounts import (
-    UploadPricesAndDiscountsAPIAction,
     GetProductsWithPricesAction,
     GetProductsWithPricesByArticlesAction,
+    UploadPricesAndDiscountsAPIAction,
 )
+from wildberriesownsdk.api.enums import SupplyStatus
 from wildberriesownsdk.core.decorators import request_per_seconds, retry
 from wildberriesownsdk.core.helpers import async_wait
 
 
 class WBAPIConnector:
-
     def __init__(
         self,
         api_key: str,
@@ -38,15 +37,25 @@ class WBAPIConnector:
         self.introspect = introspect
         self.debug = debug
 
-    def update_prices_and_discounts(self, goods: Sequence[Dict[str, Union[int, float]]]):
-        update_prices_and_discounts_api_action = UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
+    def update_prices_and_discounts(
+        self, goods: Sequence[Dict[str, Union[int, float]]]
+    ):
+        update_prices_and_discounts_api_action = (
+            UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
+        )
         return update_prices_and_discounts_api_action.do()
 
     def get_new_orders(self) -> list:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
         return new_orders_api_action.do()
 
-    def get_orders(self, page: int = 1, per_page: int = 100, date_from: Optional[datetime.datetime] = None, date_to: Optional[datetime.datetime] = None):
+    def get_orders(
+        self,
+        page: int = 1,
+        per_page: int = 100,
+        date_from: Optional[datetime.datetime] = None,
+        date_to: Optional[datetime.datetime] = None,
+    ):
         orders_api_action = OrdersAPIAction(
             api_connector=self,
             page=page,
@@ -64,7 +73,9 @@ class WBAPIConnector:
         )
         return orders_statuses_api_action.do()
 
-    def get_products_with_prices(self, limit: Optional[int] = None, offset: Optional[int] = None) -> dict:
+    def get_products_with_prices(
+        self, limit: Optional[int] = None, offset: Optional[int] = None
+    ) -> dict:
         products_with_prices_api_action = GetProductsWithPricesAction(
             api_connector=self,
             limit=limit,
@@ -73,9 +84,11 @@ class WBAPIConnector:
         return products_with_prices_api_action.do()
 
     def get_products_with_prices_by_articles(self, nm_ids: List[int]) -> dict:
-        products_with_prices_by_articles_api_action = GetProductsWithPricesByArticlesAction(
-            api_connector=self,
-            nm_ids=nm_ids,
+        products_with_prices_by_articles_api_action = (
+            GetProductsWithPricesByArticlesAction(
+                api_connector=self,
+                nm_ids=nm_ids,
+            )
         )
         return products_with_prices_by_articles_api_action.do()
 
@@ -108,7 +121,10 @@ class WBAPIConnector:
         self, article: str, file: Path, image_number: int
     ):
         return ImageToArticleUploadAction(
-            api_connector=self, article=article, image_number=image_number, file=file
+            api_connector=self,
+            article=article,
+            image_number=image_number,
+            file=file,
         )
 
     @retry(target_value=True, tries=3)
@@ -121,7 +137,9 @@ class WBAPIConnector:
             ]
         )
 
-    async def async_put_orders_to_supply(self, supply_id: str, orders: Iterable[dict]):
+    async def async_put_orders_to_supply(
+        self, supply_id: str, orders: Iterable[dict]
+    ):
         results = []
         for order in orders:
             async_wb_api_action = OrdersToSupplyAPIAction(

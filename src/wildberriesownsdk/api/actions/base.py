@@ -1,6 +1,6 @@
 from abc import ABCMeta
 from http import HTTPMethod, HTTPStatus
-from typing import Any, Coroutine, Optional, Union, Dict
+from typing import Any, Coroutine, Dict, Optional, Union
 from urllib import parse
 
 from camel_converter import dict_to_snake
@@ -12,11 +12,11 @@ from wildberriesownsdk.api.exceptions import (
     ThrottlingAPIException,
 )
 from wildberriesownsdk.core.http import (
-    log_response,
-    perform_request,
+    HTTPResponse,
     async_perform_request,
     create_timeout_instance,
-    HTTPResponse,
+    log_response,
+    perform_request,
 )
 
 
@@ -35,9 +35,13 @@ class WBAPIAction(metaclass=ABCMeta):
     collect_all_pages_if_paginated: bool = True
     root_data_field: Optional[str] = None
 
-    def __init__(self, api_connector, page: int = 1, per_page: int = 100) -> None:
+    def __init__(
+        self, api_connector, page: int = 1, per_page: int = 100
+    ) -> None:
         if per_page > MAX_PER_PAGE_VALUE:
-            raise ValueError(f"per_page argument should be in range 1-{MAX_PER_PAGE_VALUE}")
+            raise ValueError(
+                f"per_page argument should be in range 1-{MAX_PER_PAGE_VALUE}"
+            )
 
         self.api_key = api_connector.api_key
         self.api_scopes = api_connector.scopes

@@ -17,7 +17,12 @@ class ImageToArticleUploadAction(ContentAPIDetailsMixin, WBAPIAction):
     method = HTTPMethod.POST
 
     def __init__(
-        self, api_connector, article: str, file: Path, image_number: int, page: int = 1
+        self,
+        api_connector,
+        article: str,
+        file: Path,
+        image_number: int,
+        page: int = 1,
     ):
         super().__init__(api_connector, page=page)
 

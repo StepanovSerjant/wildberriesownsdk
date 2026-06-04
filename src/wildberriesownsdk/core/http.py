@@ -1,9 +1,8 @@
 from json import JSONDecodeError
-from typing import Union, TypeVar
+from typing import TypeVar, Union
 
 import httpx
 from loguru import logger
-
 
 HTTPResponse = TypeVar("HTTPResponse", bound=httpx.Response)
 
@@ -29,4 +28,6 @@ def log_response(response: HTTPResponse) -> None:
     except JSONDecodeError:
         resp_json = {}
 
-    logger.info(f"Status code {response.status_code}. Response json: {resp_json}")
+    logger.info(
+        f"Status code {response.status_code}. Response json: {resp_json}"
+    )

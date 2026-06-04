@@ -22,4 +22,6 @@ class WBStatus(enum.Enum):
         "declined_by_client"  # покупатель отменил заказ в первый чаc new
     )
     DEFECT: str = "defect"  # отмена сборочного задания по причине брака
-    READY_FOR_PICKUP: str = "ready_for_pickup"  # сборочное задание прибыло на ПВЗ
+    READY_FOR_PICKUP: str = (
+        "ready_for_pickup"  # сборочное задание прибыло на ПВЗ
+    )

@@ -21,7 +21,14 @@ class OrdersAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     has_pagination = True
     collect_all_pages_if_paginated = False
 
-    def __init__(self, api_connector, date_from: datetime.datetime, date_to: datetime.datetime, page: int = 1, per_page: int = 100):
+    def __init__(
+        self,
+        api_connector,
+        date_from: datetime.datetime,
+        date_to: datetime.datetime,
+        page: int = 1,
+        per_page: int = 100,
+    ):
         super().__init__(api_connector, page=page, per_page=per_page)
         self._date_from = date_from
         self._date_to = date_to
@@ -38,9 +45,7 @@ class OrdersAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
 
 class NewOrdersAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     name = "Получить список новых сборочных заданий"
-    description = (
-        "Возвращает список всех новых сборочных заданий у продавца на данный момент"
-    )
+    description = "Возвращает список всех новых сборочных заданий у продавца на данный момент"
 
     path = "orders/new"
     method = HTTPMethod.GET
@@ -61,7 +66,9 @@ class OrdersStatusesAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
 
     root_data_field = "orders"
 
-    def __init__(self, api_connector, body: dict, page: int = 1, per_page: int = 100):
+    def __init__(
+        self, api_connector, body: dict, page: int = 1, per_page: int = 100
+    ):
         super().__init__(api_connector, page=page, per_page=per_page)
         self._request_body = body
 
@@ -76,7 +83,9 @@ class GetSupplyAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     path = "supplies"
     method = HTTPMethod.PATCH
 
-    def __init__(self, api_connector, supply_id: str, page: int = 1, per_page: int = 100):
+    def __init__(
+        self, api_connector, supply_id: str, page: int = 1, per_page: int = 100
+    ):
         super().__init__(api_connector, page=page, per_page=per_page)
         self.supply_id = supply_id
 
@@ -93,7 +102,9 @@ class CreateSupplyAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
 
     root_data_field = "id"
 
-    def __init__(self, api_connector, name: str, page: int = 1, per_page: int = 100):
+    def __init__(
+        self, api_connector, name: str, page: int = 1, per_page: int = 100
+    ):
         super().__init__(api_connector, page=page, per_page=per_page)
         self._body_name = name
 
@@ -108,7 +119,14 @@ class OrdersToSupplyAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
     path = "supplies/{supply_id}/orders/{order_id}"
     method = HTTPMethod.PATCH
 
-    def __init__(self, api_connector, supply_id: str, order_id: int, page: int = 1, per_page: int = 100):
+    def __init__(
+        self,
+        api_connector,
+        supply_id: str,
+        order_id: int,
+        page: int = 1,
+        per_page: int = 100,
+    ):
         super().__init__(api_connector, page=page, per_page=per_page)
         self.supply_id = supply_id
         self.order_id = order_id
