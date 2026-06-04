@@ -90,32 +90,36 @@ class WBAPIAction(metaclass=ABCMeta):
     def get_query_params(self) -> Dict[str, Any]:
         return self.pagination_query_params
 
-    def do(self, echo: bool) -> Any:
+    def do(self, echo: bool, convert_to_snake_case: bool) -> Any:
         if self.has_pagination and self.collect_all_pages_if_paginated:
             response_data = self.get_merged_response_data()
         else:
             response = self.perform_request(echo=echo)
             response_data = self.get_response_data(response)
 
-        snaked_response_data = dict_to_snake(response_data)
+        if convert_to_snake_case:
+            response_data = dict_to_snake(response_data)
+
         return (
-            snaked_response_data[self.root_data_field]
+            response_data[self.root_data_field]
             if self.root_data_field
-            else snaked_response_data
+            else response_data
         )
 
-    async def async_do(self, echo: bool) -> Any:
+    async def async_do(self, echo: bool, convert_to_snake_case: bool) -> Any:
         if self.has_pagination:
             response_data = self.get_merged_response_data()
         else:
             response = await self.async_perform_request(echo=echo)
             response_data = self.get_response_data(response)
 
-        snaked_response_data = dict_to_snake(response_data)
+        if convert_to_snake_case:
+            response_data = dict_to_snake(response_data)
+
         return (
-            snaked_response_data[self.root_data_field]
+            response_data[self.root_data_field]
             if self.root_data_field
-            else snaked_response_data
+            else response_data
         )
 
     def get_merged_response_data(self) -> Any:

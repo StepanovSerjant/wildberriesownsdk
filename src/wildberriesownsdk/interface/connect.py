@@ -1,7 +1,7 @@
 import asyncio
 import datetime
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Union
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Union
 
 from loguru import logger
 
@@ -28,10 +28,12 @@ class WBAPIConnector:
         api_key: str,
         scopes: List[str],
         echo: bool = False,
+        convert_to_snake_case: bool = False,
     ) -> None:
         self.api_key = api_key
         self.scopes = scopes
         self.echo = echo
+        self.convert_to_snake_case = convert_to_snake_case
 
     def update_prices_and_discounts(
         self, goods: Sequence[Dict[str, Union[int, float]]]
@@ -39,11 +41,15 @@ class WBAPIConnector:
         update_prices_and_discounts_api_action = (
             UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
         )
-        return update_prices_and_discounts_api_action.do(echo=self.echo)
+        return update_prices_and_discounts_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     def get_new_orders(self) -> list:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
-        return new_orders_api_action.do(echo=self.echo)
+        return new_orders_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     def get_orders(
         self,
@@ -59,7 +65,9 @@ class WBAPIConnector:
             date_from=date_from,
             date_to=date_to,
         )
-        return orders_api_action.do(echo=self.echo)
+        return orders_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     @request_per_seconds(seconds=0.8)
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
@@ -67,7 +75,9 @@ class WBAPIConnector:
         orders_statuses_api_action = OrdersStatusesAPIAction(
             api_connector=self, body=orders_statuses_body
         )
-        return orders_statuses_api_action.do(echo=self.echo)
+        return orders_statuses_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     def get_products_with_prices(
         self, limit: Optional[int] = None, offset: Optional[int] = None
@@ -77,7 +87,9 @@ class WBAPIConnector:
             limit=limit,
             offset=offset,
         )
-        return products_with_prices_api_action.do(echo=self.echo)
+        return products_with_prices_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     def get_products_with_prices_by_articles(self, nm_ids: List[int]) -> dict:
         products_with_prices_by_articles_api_action = (
@@ -86,22 +98,30 @@ class WBAPIConnector:
                 nm_ids=nm_ids,
             )
         )
-        return products_with_prices_by_articles_api_action.do(echo=self.echo)
+        return products_with_prices_by_articles_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     @request_per_seconds(seconds=0.8)
     def get_supply_info(self, supply_id: str) -> dict:
         get_supply_info_api_action = GetSupplyAPIAction(
             api_connector=self, supply_id=supply_id
         )
-        return get_supply_info_api_action.do(echo=self.echo)
+        return get_supply_info_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
     def create_supply(self, supply_name: str) -> dict:
         create_supply_api_action = CreateSupplyAPIAction(
             api_connector=self, name=supply_name
         )
-        return create_supply_api_action.do(echo=self.echo)
+        return create_supply_api_action.do(
+            echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
+        )
 
-    def put_orders_into_supply(self, supply_id: str, orders: iter) -> None:
+    def put_orders_into_supply(
+        self, supply_id: str, orders: Iterable[Dict[str, Any]]
+    ) -> None:
         asyncio.run(self.async_put_orders_to_supply(supply_id, orders))
 
         orders_ids = [order["id"] for order in orders]
@@ -124,7 +144,7 @@ class WBAPIConnector:
         )
 
     @retry(target_value=True, tries=3)
-    def is_all_orders_on_confirm(self, orders_ids: iter) -> bool:
+    def is_all_orders_on_confirm(self, orders_ids: Iterable[int]) -> bool:
         orders_with_updated_statuses = self.get_orders_statuses(orders_ids)
         return all(
             [
@@ -134,7 +154,7 @@ class WBAPIConnector:
         )
 
     async def async_put_orders_to_supply(
-        self, supply_id: str, orders: Iterable[dict]
+        self, supply_id: str, orders: Iterable[Dict[str, Any]]
     ):
         results = []
         for order in orders:
@@ -142,7 +162,10 @@ class WBAPIConnector:
                 api_connector=self, supply_id=supply_id, order_id=order["id"]
             )
             task = asyncio.create_task(
-                async_wb_api_action.async_do(echo=self.echo)
+                async_wb_api_action.async_do(
+                    echo=self.echo,
+                    convert_to_snake_case=self.convert_to_snake_case,
+                )
             )
             tasks = [task, async_wait(0.8)]
 
