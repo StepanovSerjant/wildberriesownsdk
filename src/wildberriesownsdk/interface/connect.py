@@ -6,15 +6,15 @@ from typing import Dict, Iterable, List, Optional, Sequence, Union
 from loguru import logger
 
 from wildberriesownsdk.api.actions import (
-    ImageToArticleUploadAction,
     CreateSupplyAPIAction,
+    GetProductsWithPricesAction,
+    GetProductsWithPricesByArticlesAction,
     GetSupplyAPIAction,
+    ImageToArticleUploadAction,
     NewOrdersAPIAction,
     OrdersAPIAction,
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
-    GetProductsWithPricesAction,
-    GetProductsWithPricesByArticlesAction,
     UploadPricesAndDiscountsAPIAction,
 )
 from wildberriesownsdk.api.enums import SupplyStatus
@@ -27,19 +27,15 @@ class WBAPIConnector:
         self,
         api_key: str,
         scopes: List[str],
-        introspect: bool = True,
-        debug: bool = True,
     ) -> None:
         self.api_key = api_key
         self.scopes = scopes
-        self.introspect = introspect
-        self.debug = debug
 
     def update_prices_and_discounts(
         self, goods: Sequence[Dict[str, Union[int, float]]]
     ):
-        update_prices_and_discounts_api_action = UploadPricesAndDiscountsAPIAction(
-            api_connector=self, goods=goods
+        update_prices_and_discounts_api_action = (
+            UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
         )
         return update_prices_and_discounts_api_action.do()
 
@@ -135,7 +131,9 @@ class WBAPIConnector:
             ]
         )
 
-    async def async_put_orders_to_supply(self, supply_id: str, orders: Iterable[dict]):
+    async def async_put_orders_to_supply(
+        self, supply_id: str, orders: Iterable[dict]
+    ):
         results = []
         for order in orders:
             async_wb_api_action = OrdersToSupplyAPIAction(
