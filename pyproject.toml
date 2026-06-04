@@ -9,18 +9,44 @@ include-package-data=true
 where=["src"]
 
 [tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
+dependencies = {file = ["requirements/base.txt"]}
 
 [project]
 name="wildberriesownsdk"
-version="0.1"
+version="1.0"
 readme="README.md"
 authors=[
     {name="Aleksey Stepanov", email="stpnvlks@gmail.com"},
 ]
+license = "MIT"
+license-files = ["LICENSE"]
 description="Wildberries API SDK. (not official)"
 requires-python=">=3.8"
 classifiers=[
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries",
 ]
 dynamic = ["dependencies"]
+
+[project.urls]
+"Source" = "https://github.com/StepanovSerjant/wildberriesownsdk"
+"Homepage" = "https://github.com/StepanovSerjant/wildberriesownsdk"
+"Bug Tracker" = "https://github.com/StepanovSerjant/wildberriesownsdk/issues"
+
+[tool.ruff]
+line-length = 80
+exclude = []
+
+[tool.ruff.lint]
+select = ["I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
