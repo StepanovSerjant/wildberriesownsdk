@@ -1,12 +1,13 @@
 from abc import ABCMeta
 from http import HTTPMethod, HTTPStatus
-from typing import Any, Coroutine, Dict, List, Optional, Union
+from typing import Annotated, Any, Coroutine, Dict, Optional, Union
 from urllib import parse
 
 from camel_converter import dict_to_snake
 from deepmerge import always_merger
 
 from wildberriesownsdk.api.constants import MAX_PER_PAGE_VALUE
+from wildberriesownsdk.api.enums import WBAPIScope
 from wildberriesownsdk.api.exceptions import (
     WBAPIBadRequestException,
     WBAPIException,
@@ -27,11 +28,12 @@ from wildberriesownsdk.core.http import (
 class WBAPIAction(metaclass=ABCMeta):
     api_url: str
     api_version: str
+    api_scope: WBAPIScope
 
     name: str
     description: Optional[str] = None
 
-    method: HTTPMethod = HTTPMethod.GET
+    method: Annotated[str, HTTPMethod] = HTTPMethod.GET
     path: Optional[str] = None
     timeout: Union[int, float] = 15.0
 

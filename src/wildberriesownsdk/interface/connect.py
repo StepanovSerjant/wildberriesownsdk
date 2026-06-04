@@ -17,7 +17,9 @@ from wildberriesownsdk.api.actions import (
     OrdersToSupplyAPIAction,
     UploadPricesAndDiscountsAPIAction,
 )
+from wildberriesownsdk.api.actions.base import WBAPIAction
 from wildberriesownsdk.api.enums import SupplyStatus
+from wildberriesownsdk.api.exceptions import WBAPIForbiddenException
 from wildberriesownsdk.core.decorators import request_per_seconds, retry
 from wildberriesownsdk.core.helpers import async_wait
 
@@ -26,12 +28,11 @@ class WBAPIConnector:
     def __init__(
         self,
         api_key: str,
-        scopes: List[str],
         echo: bool = False,
         convert_to_snake_case: bool = False,
     ) -> None:
         self.api_key = api_key
-        self.scopes = scopes
+        self.available_scopes = []
         self.echo = echo
         self.convert_to_snake_case = convert_to_snake_case
 
@@ -41,12 +42,14 @@ class WBAPIConnector:
         update_prices_and_discounts_api_action = (
             UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
         )
+        self._check_action_scope(action=update_prices_and_discounts_api_action)
         return update_prices_and_discounts_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
 
     def get_new_orders(self) -> list:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
+        self._check_action_scope(action=new_orders_api_action)
         return new_orders_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -65,6 +68,7 @@ class WBAPIConnector:
             date_from=date_from,
             date_to=date_to,
         )
+        self._check_action_scope(action=orders_api_action)
         return orders_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -75,6 +79,7 @@ class WBAPIConnector:
         orders_statuses_api_action = OrdersStatusesAPIAction(
             api_connector=self, body=orders_statuses_body
         )
+        self._check_action_scope(action=orders_statuses_api_action)
         return orders_statuses_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -87,6 +92,7 @@ class WBAPIConnector:
             limit=limit,
             offset=offset,
         )
+        self._check_action_scope(action=products_with_prices_api_action)
         return products_with_prices_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -98,6 +104,9 @@ class WBAPIConnector:
                 nm_ids=nm_ids,
             )
         )
+        self._check_action_scope(
+            action=products_with_prices_by_articles_api_action
+        )
         return products_with_prices_by_articles_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -107,6 +116,7 @@ class WBAPIConnector:
         get_supply_info_api_action = GetSupplyAPIAction(
             api_connector=self, supply_id=supply_id
         )
+        self._check_action_scope(action=get_supply_info_api_action)
         return get_supply_info_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -115,6 +125,7 @@ class WBAPIConnector:
         create_supply_api_action = CreateSupplyAPIAction(
             api_connector=self, name=supply_name
         )
+        self._check_action_scope(action=create_supply_api_action)
         return create_supply_api_action.do(
             echo=self.echo, convert_to_snake_case=self.convert_to_snake_case
         )
@@ -184,3 +195,10 @@ class WBAPIConnector:
             results.append(order_result)
 
         return results
+
+    def _check_action_scope(self, action: WBAPIAction) -> None:
+        if action.api_scope not in self.available_scopes:
+            available_scopes_str = ", ".join(self.available_scopes)
+            raise WBAPIForbiddenException(
+                f"Ваш токен соответствует категориям: {available_scopes_str}\nОтсутствует необходимая категория {action.api_scope}"
+            )

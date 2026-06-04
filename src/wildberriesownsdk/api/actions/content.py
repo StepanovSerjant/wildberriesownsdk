@@ -2,11 +2,13 @@ from http import HTTPMethod
 from pathlib import Path
 
 from wildberriesownsdk.api.actions.base import WBAPIAction
+from wildberriesownsdk.api.enums import WBAPIScope
 
 
 class ContentAPIDetailsMixin:
     api_url = "https://content-api.wildberries.ru/content"
     api_version = "v3"
+    api_scope = WBAPIScope.CONTENT
 
 
 class ImageToArticleUploadAction(ContentAPIDetailsMixin, WBAPIAction):

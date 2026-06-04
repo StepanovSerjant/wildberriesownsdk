@@ -3,6 +3,7 @@ from http import HTTPMethod
 from typing import Dict, List, Optional, Sequence, Union
 
 from wildberriesownsdk.api.actions.base import WBAPIAction
+from wildberriesownsdk.api.enums import WBAPIScope
 
 
 @dataclass(frozen=True)
@@ -20,6 +21,7 @@ class PriceAndDiscountOfGoodSchema:
 class PriceAndDiscountsAPIDetailsMixin:
     api_url = "https://discounts-prices-api.wildberries.ru/apii"
     api_version = "v2"
+    api_scope = WBAPIScope.PRICES_AND_DISCOUNTS
 
 
 class UploadPricesAndDiscountsAPIAction(

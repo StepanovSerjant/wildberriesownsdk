@@ -2,11 +2,13 @@ import datetime
 from http import HTTPMethod
 
 from wildberriesownsdk.api.actions.base import WBAPIAction
+from wildberriesownsdk.api.enums import WBAPIScope
 
 
 class MarketPlaceAPIDetailsMixin:
     api_url = "https://marketplace-api.wildberries.ru/api"
     api_version = "v3"
+    api_scope = WBAPIScope.MARKETPLACE
 
 
 class OrdersAPIAction(MarketPlaceAPIDetailsMixin, WBAPIAction):
