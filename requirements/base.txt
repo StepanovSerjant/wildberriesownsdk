@@ -1,5 +1,4 @@
 httpx==0.28.1
-loguru==0.7.3
 deepmerge==2.0
 camel-converter==4.0.1
 pytz==2026.2

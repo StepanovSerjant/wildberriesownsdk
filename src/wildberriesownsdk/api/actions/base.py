@@ -28,7 +28,7 @@ from wildberriesownsdk.core.http import (
 class WBAPIAction(metaclass=ABCMeta):
     api_url: str
     api_version: str
-    api_scope: WBAPIScope
+    api_scope: Annotated[str, WBAPIScope]
 
     name: str
     description: Optional[str] = None

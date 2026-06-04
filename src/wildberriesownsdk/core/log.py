@@ -1,13 +1,7 @@
-import sys
+import logging
 
-from loguru import logger
-
-logger.add(
-    sys.stdout,
-    format="{time} {level} {message}",
-    level="INFO",
-    filter=lambda record: record["level"].no in [20, 40],
-    colorize=True,
-    backtrace=True,
-    diagnose=True,
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )

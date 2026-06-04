@@ -1,10 +1,11 @@
+import logging
 from json import JSONDecodeError
 from typing import TypeVar, Union
 
 import httpx
-from loguru import logger
 
 HTTPResponse = TypeVar("HTTPResponse", bound=httpx.Response)
+logger = logging.getLogger(__name__)
 
 
 def perform_request(*args, **kwargs) -> HTTPResponse:
