@@ -90,11 +90,11 @@ class WBAPIAction(metaclass=ABCMeta):
     def get_query_params(self) -> Dict[str, Any]:
         return self.pagination_query_params
 
-    def do(self) -> Any:
+    def do(self, echo: bool) -> Any:
         if self.has_pagination and self.collect_all_pages_if_paginated:
             response_data = self.get_merged_response_data()
         else:
-            response = self.perform_request()
+            response = self.perform_request(echo=echo)
             response_data = self.get_response_data(response)
 
         snaked_response_data = dict_to_snake(response_data)
@@ -104,11 +104,11 @@ class WBAPIAction(metaclass=ABCMeta):
             else snaked_response_data
         )
 
-    async def async_do(self) -> Any:
+    async def async_do(self, echo: bool) -> Any:
         if self.has_pagination:
             response_data = self.get_merged_response_data()
         else:
-            response = await self.async_perform_request()
+            response = await self.async_perform_request(echo=echo)
             response_data = self.get_response_data(response)
 
         snaked_response_data = dict_to_snake(response_data)
@@ -138,16 +138,18 @@ class WBAPIAction(metaclass=ABCMeta):
 
         return merged_response_data
 
-    def perform_request(self) -> HTTPResponse:
+    def perform_request(self, echo: bool) -> HTTPResponse:
         request_kwargs = self.get_request_kwargs()
         self.last_response = perform_request(**request_kwargs)
-        log_response(self.last_response)
+        if echo:
+            log_response(self.last_response)
         return self.last_response
 
-    async def async_perform_request(self) -> HTTPResponse:
+    async def async_perform_request(self, echo: bool) -> HTTPResponse:
         request_kwargs = self.get_request_kwargs()
         self.last_response = await async_perform_request(**request_kwargs)
-        log_response(self.last_response)
+        if echo:
+            log_response(self.last_response)
         return self.last_response
 
     def get_request_kwargs(self) -> Dict[str, Any]:

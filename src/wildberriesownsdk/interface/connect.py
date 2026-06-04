@@ -27,9 +27,11 @@ class WBAPIConnector:
         self,
         api_key: str,
         scopes: List[str],
+        echo: bool = False,
     ) -> None:
         self.api_key = api_key
         self.scopes = scopes
+        self.echo = echo
 
     def update_prices_and_discounts(
         self, goods: Sequence[Dict[str, Union[int, float]]]
@@ -37,11 +39,11 @@ class WBAPIConnector:
         update_prices_and_discounts_api_action = (
             UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
         )
-        return update_prices_and_discounts_api_action.do()
+        return update_prices_and_discounts_api_action.do(echo=self.echo)
 
     def get_new_orders(self) -> list:
         new_orders_api_action = NewOrdersAPIAction(api_connector=self)
-        return new_orders_api_action.do()
+        return new_orders_api_action.do(echo=self.echo)
 
     def get_orders(
         self,
@@ -57,7 +59,7 @@ class WBAPIConnector:
             date_from=date_from,
             date_to=date_to,
         )
-        return orders_api_action.do()
+        return orders_api_action.do(echo=self.echo)
 
     @request_per_seconds(seconds=0.8)
     def get_orders_statuses(self, orders_ids: Iterable[int]) -> List[dict]:
@@ -65,7 +67,7 @@ class WBAPIConnector:
         orders_statuses_api_action = OrdersStatusesAPIAction(
             api_connector=self, body=orders_statuses_body
         )
-        return orders_statuses_api_action.do()
+        return orders_statuses_api_action.do(echo=self.echo)
 
     def get_products_with_prices(
         self, limit: Optional[int] = None, offset: Optional[int] = None
@@ -75,7 +77,7 @@ class WBAPIConnector:
             limit=limit,
             offset=offset,
         )
-        return products_with_prices_api_action.do()
+        return products_with_prices_api_action.do(echo=self.echo)
 
     def get_products_with_prices_by_articles(self, nm_ids: List[int]) -> dict:
         products_with_prices_by_articles_api_action = (
@@ -84,20 +86,20 @@ class WBAPIConnector:
                 nm_ids=nm_ids,
             )
         )
-        return products_with_prices_by_articles_api_action.do()
+        return products_with_prices_by_articles_api_action.do(echo=self.echo)
 
     @request_per_seconds(seconds=0.8)
     def get_supply_info(self, supply_id: str) -> dict:
         get_supply_info_api_action = GetSupplyAPIAction(
             api_connector=self, supply_id=supply_id
         )
-        return get_supply_info_api_action.do()
+        return get_supply_info_api_action.do(echo=self.echo)
 
     def create_supply(self, supply_name: str) -> dict:
         create_supply_api_action = CreateSupplyAPIAction(
             api_connector=self, name=supply_name
         )
-        return create_supply_api_action.do()
+        return create_supply_api_action.do(echo=self.echo)
 
     def put_orders_into_supply(self, supply_id: str, orders: iter) -> None:
         asyncio.run(self.async_put_orders_to_supply(supply_id, orders))
@@ -139,7 +141,9 @@ class WBAPIConnector:
             async_wb_api_action = OrdersToSupplyAPIAction(
                 api_connector=self, supply_id=supply_id, order_id=order["id"]
             )
-            task = asyncio.create_task(async_wb_api_action.async_do())
+            task = asyncio.create_task(
+                async_wb_api_action.async_do(echo=self.echo)
+            )
             tasks = [task, async_wait(0.8)]
 
             order_result, _ = await asyncio.gather(*tasks)
