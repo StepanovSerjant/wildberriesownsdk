@@ -8,8 +8,12 @@ from deepmerge import always_merger
 
 from wildberriesownsdk.api.constants import MAX_PER_PAGE_VALUE
 from wildberriesownsdk.api.exceptions import (
-    GettingDataFromAPIException,
-    ThrottlingAPIException,
+    WBAPIBadRequestException,
+    WBAPIException,
+    WBAPIForbiddenException,
+    WBAPINotFoundException,
+    WBAPIThrottlingException,
+    WBAPIUnauthorizedException,
 )
 from wildberriesownsdk.core.http import (
     HTTPResponse,
@@ -170,11 +174,47 @@ class WBAPIAction(metaclass=ABCMeta):
                 if response_status_code == HTTPStatus.NO_CONTENT
                 else response.json()
             )
+
+        error_base_text = f"Сервис {self.name} не смог получить данные."
+        if response_status_code == HTTPStatus.BAD_REQUEST:
+            error_text = response.json()["errorText"]
+            bad_request_text = f"Вы отправили невалидные данны.\n{error_text}"
+            raise WBAPIBadRequestException(
+                f"{error_base_text}\n{bad_request_text}"
+            )
+        elif response_status_code == HTTPStatus.UNAUTHORIZED:
+            unauthorized_request_text = (
+                "Вы не авторизованы, проверьте свой токен"
+            )
+            raise WBAPIUnauthorizedException(
+                f"{error_base_text}\n{unauthorized_request_text}"
+            )
+        elif response_status_code == HTTPStatus.FORBIDDEN:
+            forbidden_request_text = "Ваш доступ к ресурсу ограничен, проверьте скоупы указанного токена"
+            raise WBAPIForbiddenException(
+                f"{error_base_text}\n{forbidden_request_text}"
+            )
+        elif response_status_code == HTTPStatus.NOT_FOUND:
+            not_found_request_text = (
+                f"Вы указали несуществующий адрес {self.get_url()}"
+            )
+            raise WBAPINotFoundException(
+                f"{error_base_text}\n{not_found_request_text}"
+            )
         elif response_status_code == HTTPStatus.TOO_MANY_REQUESTS:
-            raise ThrottlingAPIException(
-                f"Сервис {self.name} не смог получить данные.\n Слишком много запросов на единицу времени"
+            response_json = response.json()
+            too_many_requests_text = "\n".join(
+                [
+                    "Слишком много запросов на единицу времени",
+                    response_json["title"],
+                    response_json["description"],
+                ]
+            )
+            raise WBAPIThrottlingException(
+                f"{error_base_text}\n{too_many_requests_text}"
             )
         else:
-            raise GettingDataFromAPIException(
-                f"Сервис {self.name} не смог получить данные.\n Статус код ответа сервера {response_status_code}"
+            another_error_text = (
+                f"Статус код ответа сервера {response_status_code}"
             )
+            raise WBAPIException(f"{error_base_text}\n{another_error_text}")
