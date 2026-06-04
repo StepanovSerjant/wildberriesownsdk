@@ -5,16 +5,14 @@ from typing import Dict, Iterable, List, Optional, Sequence, Union
 
 from loguru import logger
 
-from wildberriesownsdk.api.actions.content import ImageToArticleUploadAction
-from wildberriesownsdk.api.actions.marketplace import (
+from wildberriesownsdk.api.actions import (
+    ImageToArticleUploadAction,
     CreateSupplyAPIAction,
     GetSupplyAPIAction,
     NewOrdersAPIAction,
     OrdersAPIAction,
     OrdersStatusesAPIAction,
     OrdersToSupplyAPIAction,
-)
-from wildberriesownsdk.api.actions.prices_and_discounts import (
     GetProductsWithPricesAction,
     GetProductsWithPricesByArticlesAction,
     UploadPricesAndDiscountsAPIAction,
@@ -40,8 +38,8 @@ class WBAPIConnector:
     def update_prices_and_discounts(
         self, goods: Sequence[Dict[str, Union[int, float]]]
     ):
-        update_prices_and_discounts_api_action = (
-            UploadPricesAndDiscountsAPIAction(api_connector=self, goods=goods)
+        update_prices_and_discounts_api_action = UploadPricesAndDiscountsAPIAction(
+            api_connector=self, goods=goods
         )
         return update_prices_and_discounts_api_action.do()
 
@@ -137,9 +135,7 @@ class WBAPIConnector:
             ]
         )
 
-    async def async_put_orders_to_supply(
-        self, supply_id: str, orders: Iterable[dict]
-    ):
+    async def async_put_orders_to_supply(self, supply_id: str, orders: Iterable[dict]):
         results = []
         for order in orders:
             async_wb_api_action = OrdersToSupplyAPIAction(
