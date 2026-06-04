@@ -1,6 +1,6 @@
 from abc import ABCMeta
 from http import HTTPMethod, HTTPStatus
-from typing import Any, Coroutine, Dict, Optional, Union
+from typing import Any, Coroutine, Dict, List, Optional, Union
 from urllib import parse
 
 from camel_converter import dict_to_snake
@@ -92,7 +92,7 @@ class WBAPIAction(metaclass=ABCMeta):
 
     def do(self, echo: bool, convert_to_snake_case: bool) -> Any:
         if self.has_pagination and self.collect_all_pages_if_paginated:
-            response_data = self.get_merged_response_data()
+            response_data = self.get_merged_response_data(echo=echo)
         else:
             response = self.perform_request(echo=echo)
             response_data = self.get_response_data(response)
@@ -108,7 +108,7 @@ class WBAPIAction(metaclass=ABCMeta):
 
     async def async_do(self, echo: bool, convert_to_snake_case: bool) -> Any:
         if self.has_pagination:
-            response_data = self.get_merged_response_data()
+            response_data = self.get_merged_response_data(echo=echo)
         else:
             response = await self.async_perform_request(echo=echo)
             response_data = self.get_response_data(response)
@@ -122,12 +122,12 @@ class WBAPIAction(metaclass=ABCMeta):
             else response_data
         )
 
-    def get_merged_response_data(self) -> Any:
+    def get_merged_response_data(self, echo: bool) -> Any:
         merged_response_data = {}
 
         start_page = self.page
         while start_page:
-            response = self.perform_request()
+            response = self.perform_request(echo=echo)
             response_data = self.get_response_data(response)
 
             next_page = response_data.pop("next", 0)
